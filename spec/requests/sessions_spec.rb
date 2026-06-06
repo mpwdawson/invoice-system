@@ -1,29 +1,31 @@
-require "rails_helper"
+# frozen_string_literal: true
 
-RSpec.describe "Sessions", type: :request do
-  let(:correct_password) { "test_password" }
-  let(:wrong_password)   { "wrong" }
+require 'rails_helper'
 
-  describe "GET /" do
-    context "without a session" do
-      it "redirects to login" do
-        get "/"
+RSpec.describe 'Sessions' do
+  let(:correct_password) { 'test_password' }
+  let(:wrong_password)   { 'wrong' }
+
+  describe 'GET /' do
+    context 'without a session' do
+      it 'redirects to login' do
+        get '/'
         expect(response).to redirect_to(login_path)
       end
     end
   end
 
-  describe "POST /login" do
-    context "with the correct password" do
-      it "sets the session and redirects" do
+  describe 'POST /login' do
+    context 'with the correct password' do
+      it 'sets the session and redirects' do
         post login_path, params: { password: correct_password }
         expect(session[:authenticated]).to be true
         expect(response).to be_redirect
       end
     end
 
-    context "with the wrong password" do
-      it "does not set the session and re-renders login" do
+    context 'with the wrong password' do
+      it 'does not set the session and re-renders login' do
         post login_path, params: { password: wrong_password }
         expect(session[:authenticated]).to be_nil
         expect(response).to have_http_status(:unprocessable_content)
@@ -31,10 +33,10 @@ RSpec.describe "Sessions", type: :request do
     end
   end
 
-  describe "DELETE /logout" do
+  describe 'DELETE /logout' do
     before { post login_path, params: { password: correct_password } }
 
-    it "clears the session and redirects to login" do
+    it 'clears the session and redirects to login' do
       delete logout_path
       expect(session[:authenticated]).to be_nil
       expect(response).to redirect_to(login_path)

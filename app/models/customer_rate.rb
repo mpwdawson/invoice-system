@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CustomerRate < ApplicationRecord
   belongs_to :customer
 
@@ -6,7 +8,7 @@ class CustomerRate < ApplicationRecord
 
   def self.current_for(customer, date)
     where(customer: customer)
-      .where("effective_from <= ?", date)
+      .where(effective_from: ..date)
       .order(effective_from: :desc)
       .first
   end

@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class ProjectCodesController < ApplicationController
   before_action :set_customer
-  before_action :set_project_code, only: [ :edit, :update, :archive, :destroy ]
+  before_action :set_project_code, only: [:edit, :update, :archive, :destroy]
 
   def index
     @project_codes = @customer.project_codes.includes(:tasks).ordered
@@ -10,22 +12,22 @@ class ProjectCodesController < ApplicationController
     @project_code = @customer.project_codes.build
   end
 
+  def edit; end
+
   def create
     @project_code = @customer.project_codes.build(project_code_params)
     if @project_code.save
-      redirect_to customer_project_codes_path(@customer), notice: "Project code added."
+      redirect_to customer_project_codes_path(@customer), notice: 'Project code added.'
     else
-      render :new, formats: [ :html ], status: :unprocessable_content
+      render :new, formats: [:html], status: :unprocessable_content
     end
   end
 
-  def edit; end
-
   def update
     if @project_code.update(project_code_params)
-      redirect_to customer_project_codes_path(@customer), notice: "Project code updated."
+      redirect_to customer_project_codes_path(@customer), notice: 'Project code updated.'
     else
-      render :edit, formats: [ :html ], status: :unprocessable_content
+      render :edit, formats: [:html], status: :unprocessable_content
     end
   end
 
@@ -36,7 +38,7 @@ class ProjectCodesController < ApplicationController
 
   def destroy
     if @project_code.destroy
-      redirect_to customer_project_codes_path(@customer), notice: "Project code deleted."
+      redirect_to customer_project_codes_path(@customer), notice: 'Project code deleted.'
     else
       redirect_to customer_project_codes_path(@customer),
                   alert: @project_code.errors.full_messages.to_sentence
@@ -46,14 +48,14 @@ class ProjectCodesController < ApplicationController
   private
 
   def set_customer
-    @customer = Customer.find(params[:customer_id])
+    @customer = Customer.find(params.expect(:customer_id))
   end
 
   def set_project_code
-    @project_code = @customer.project_codes.find(params[:id])
+    @project_code = @customer.project_codes.find(params.expect(:id))
   end
 
   def project_code_params
-    params.require(:project_code).permit(:code, :description)
+    params.expect(project_code: [:code, :description])
   end
 end

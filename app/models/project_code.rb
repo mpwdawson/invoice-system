@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProjectCode < ApplicationRecord
   belongs_to :customer
   has_many :tasks, dependent: :restrict_with_error

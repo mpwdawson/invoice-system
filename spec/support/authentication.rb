@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module AuthenticationHelpers
   def login
     visit login_path
-    fill_in "Password", with: "test_password"
-    click_button "Sign in"
+    fill_in 'Password', with: 'test_password'
+    click_button 'Sign in'
   end
 end
 

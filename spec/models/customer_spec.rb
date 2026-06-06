@@ -1,9 +1,11 @@
-require "rails_helper"
+# frozen_string_literal: true
 
-describe Customer, type: :model do
+require 'rails_helper'
+
+describe Customer do
   subject { build(:customer) }
 
-  describe "validations" do
+  describe 'validations' do
     it { is_expected.to validate_presence_of(:name) }
   end
 end

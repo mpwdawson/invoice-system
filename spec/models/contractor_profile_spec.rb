@@ -1,7 +1,9 @@
-require "rails_helper"
+# frozen_string_literal: true
 
-describe ContractorProfile, type: :model do
-  describe "validations" do
+require 'rails_helper'
+
+describe ContractorProfile do
+  describe 'validations' do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:email) }
   end

@@ -1,14 +1,155 @@
-# Omakase Ruby styling for Rails
-inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+# RuboCop configuration for argen-deploy
+# See https://docs.rubocop.org/
+
+plugins:
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-rspec_rails
+  - rubocop-factory_bot
+  - rubocop-capybara
 
 AllCops:
+  NewCops: enable
   TargetRubyVersion: 4.0
-
-Rails:
   TargetRailsVersion: 8.1
+  Exclude:
+    - "bin/*"
+    - "db/schema.rb"
+    - "db/queue_schema.rb"
+    - "db/migrate/*"
+    - "node_modules/**/*"
+    - "vendor/**/*"
 
-# Overwrite or add rules to create your own house style
-#
-# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
-# Layout/SpaceInsideArrayLiteralBrackets:
-#   Enabled: false
+# Rails
+Rails:
+  Enabled: true
+
+# RSpec
+RSpec/ExampleLength:
+  Max: 30
+RSpec/MultipleExpectations:
+  Max: 25
+RSpec/AnyInstance:
+  Enabled: false
+RSpec/NamedSubject:
+  Enabled: false
+RSpec/LetSetup:
+  Enabled: false
+RSpec/ContextWording:
+  Enabled: false
+RSpec/SpecFilePathFormat:
+  Enabled: false
+RSpec/IndexedLet:
+  Enabled: false
+RSpec/MessageSpies:
+  Enabled: false
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+RSpecRails/HaveHttpStatus:
+  Enabled: false
+RSpec/ReceiveMessages:
+  Enabled: false
+
+# Metrics - relaxed for gradual adoption
+Metrics/MethodLength:
+  Max: 60
+Metrics/AbcSize:
+  Max: 90
+Metrics/ClassLength:
+  Max: 750
+Metrics/CyclomaticComplexity:
+  Max: 40
+Metrics/PerceivedComplexity:
+  Max: 40
+Metrics/ParameterLists:
+  Max: 10
+Metrics/BlockLength:
+  Max: 40
+  Exclude:
+    - "config/**/*"
+    - "spec/**/*"
+    - "lib/tasks/**/*"
+    - "app/services/**/*"
+
+# Relax a few rules for gradual adoption
+Style/Documentation:
+  Enabled: false
+Style/SafeNavigationChainLength:
+  Enabled: false
+# Allow if/unless modifiers for short conditions, but not for long ones
+Style/IfUnlessModifier:
+  Enabled: false
+Layout/LineLength:
+  Max: 190
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+Layout/HashAlignment:
+  EnforcedColonStyle: key
+  EnforcedHashRocketStyle: key
+Rails/I18nLocaleTexts:
+  Enabled: false
+Naming/BlockForwarding:
+  Enabled: false
+
+# Allow standard [ :a, :b ] syntax for arrays of symbols
+Style/SymbolArray:
+  Enabled: false
+
+# FactoryBot - Cleaner DSL syntax
+# Disabling this allows 'create :user' instead of 'create(:user)'
+FactoryBot/ConsistentParenthesesStyle:
+  Enabled: false
+
+# Supports --auto-correct
+Layout/ClassStructure:
+  Description: Enforces a configured order of definitions within a class body.
+  StyleGuide: https://github.com/bbatsov/ruby-style-guide#consistent-classes
+  Enabled: true
+  Categories:
+    module_inclusion:
+    - include
+    - prepend
+    - extend
+  ExpectedOrder:
+  - module_inclusion
+  - constants
+  - public_class_methods
+  - initializer
+  - public_methods
+  - protected_methods
+  - private_methods
+
+Lint/DuplicateMethods:
+  Enabled: true
+Lint/Debugger:
+  Enabled: true
+Lint/Void:
+  Enabled: true
+
+# Prevents migrations from adding NOT NULL columns without a default value.
+Rails/NotNullColumn:
+  Enabled: true
+
+# Ensures validations are backed by DB constraints.
+Rails/UniqueValidationWithoutIndex:
+  Enabled: true
+
+# Prevents the use of .html_safe or raw() which can lead to XSS vulnerabilities.
+Rails/OutputSafety:
+  Enabled: true
+
+# Prevents Remote Code Execution (RCE) vulnerabilities by forbidding unsafe
+# loading of JSON or Marshal data from untrusted sources.
+Security/JSONLoad:
+  Enabled: true
+
+# Prevents Remote Code Execution (RCE) vulnerabilities.
+# Marshal.load is extremely dangerous with untrusted data as it can instantiate any Ruby class.
+Security/MarshalLoad:
+  Enabled: true
+
+# Keeps your Gemfile clean and sorted alphabetically.
+Bundler/OrderedGems:
+  Enabled: true
+  TreatCommentsAsGroupSeparators: true

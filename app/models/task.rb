@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 class Task < ApplicationRecord
   belongs_to :customer
   belongs_to :project_code, optional: true
 
-  enum :status, { active: "active", archived: "archived" }, default: "active"
+  enum :status, { active: 'active', archived: 'archived' }, default: 'active'
 
   validates :title, presence: true
 
@@ -15,6 +17,7 @@ class Task < ApplicationRecord
 
   def project_code_belongs_to_customer
     return if project_code&.customer_id == customer_id
-    errors.add(:project_code, "must belong to the selected customer")
+
+    errors.add(:project_code, 'must belong to the selected customer')
   end
 end

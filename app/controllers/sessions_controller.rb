@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SessionsController < ApplicationController
   skip_before_action :require_login
 
@@ -6,22 +8,22 @@ class SessionsController < ApplicationController
   def create
     if secure_token_compare(password_digest, params[:password].to_s)
       session[:authenticated] = true
-      redirect_to root_path, notice: "Signed in."
+      redirect_to root_path, notice: 'Signed in.'
     else
-      flash.now[:alert] = "Invalid password."
+      flash.now[:alert] = 'Invalid password.'
       render :new, status: :unprocessable_content
     end
   end
 
   def destroy
     session[:authenticated] = nil
-    redirect_to login_path, notice: "Signed out."
+    redirect_to login_path, notice: 'Signed out.'
   end
 
   private
 
   def password_digest
-    ENV.fetch("APP_PASSWORD_DIGEST")
+    ENV.fetch('APP_PASSWORD_DIGEST')
   end
 
   def secure_token_compare(digest, password)

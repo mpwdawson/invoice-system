@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :task do
-    association :customer
+    customer
     sequence(:title) { |n| "Task #{n}" }
-    status  { "active" }
+    status { 'active' }
     billable { true }
   end
 end
