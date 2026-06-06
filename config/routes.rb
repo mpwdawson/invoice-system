@@ -11,6 +11,9 @@ Rails.application.routes.draw do
 
   root "home#index"
 
+  get   "settings", to: "settings#edit",   as: :settings
+  patch "settings", to: "settings#update"
+
   get    "login",  to: "sessions#new",     as: :login
   post   "login",  to: "sessions#create"
   delete "logout", to: "sessions#destroy", as: :logout

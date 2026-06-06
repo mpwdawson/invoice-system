@@ -1,0 +1,27 @@
+<h1 class="text-xl font-semibold mb-6">Settings</h1>
+
+<%= form_with model: @profile, url: settings_path, method: :patch do |f| %>
+  <div class="space-y-4 max-w-lg">
+    <div>
+      <%= f.label :name, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :name, class: "w-full border rounded px-3 py-2 text-sm" %>
+    </div>
+    <div>
+      <%= f.label :email, class: "block text-sm font-medium mb-1" %>
+      <%= f.email_field :email, class: "w-full border rounded px-3 py-2 text-sm" %>
+    </div>
+    <div>
+      <%= f.label :address, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :address, rows: 3, class: "w-full border rounded px-3 py-2 text-sm" %>
+    </div>
+    <div>
+      <%= f.label :tax_number, "Tax Number", class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :tax_number, class: "w-full border rounded px-3 py-2 text-sm" %>
+    </div>
+    <div>
+      <%= f.label :bank_details, "Bank Details", class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :bank_details, rows: 3, class: "w-full border rounded px-3 py-2 text-sm" %>
+    </div>
+    <%= f.submit "Save", class: "mt-2 px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700" %>
+  </div>
+<% end %>
