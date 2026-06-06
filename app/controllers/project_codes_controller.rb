@@ -1,9 +1,9 @@
 class ProjectCodesController < ApplicationController
   before_action :set_customer
-  before_action :set_project_code, only: [ :edit, :update, :archive ]
+  before_action :set_project_code, only: [ :edit, :update, :archive, :destroy ]
 
   def index
-    @project_codes = @customer.project_codes.ordered
+    @project_codes = @customer.project_codes.includes(:tasks).ordered
   end
 
   def new
@@ -32,6 +32,15 @@ class ProjectCodesController < ApplicationController
   def archive
     @project_code.update!(active: !@project_code.active)
     redirect_to customer_project_codes_path(@customer)
+  end
+
+  def destroy
+    if @project_code.destroy
+      redirect_to customer_project_codes_path(@customer), notice: "Project code deleted."
+    else
+      redirect_to customer_project_codes_path(@customer),
+                  alert: @project_code.errors.full_messages.to_sentence
+    end
   end
 
   private

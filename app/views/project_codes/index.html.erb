@@ -29,6 +29,13 @@
               archive_customer_project_code_path(@customer, code),
               method: :patch,
               class: "text-xs text-slate-500 hover:underline bg-transparent border-none cursor-pointer p-0" %>
+          <% if code.tasks.empty? %>
+            <%= button_to "Delete",
+                customer_project_code_path(@customer, code),
+                method: :delete,
+                data: { turbo_confirm: "Delete #{code.code}? This cannot be undone." },
+                class: "text-xs text-red-400 hover:underline bg-transparent border-none cursor-pointer p-0" %>
+          <% end %>
         </td>
       </tr>
     <% end %>

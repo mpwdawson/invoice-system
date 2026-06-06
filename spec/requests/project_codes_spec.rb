@@ -79,6 +79,30 @@ describe "ProjectCodes", type: :request do
     end
   end
 
+  describe "DELETE /customers/:customer_id/project_codes/:id" do
+    let!(:project_code) { create(:project_code, customer: customer) }
+
+    context "when no tasks are assigned" do
+      it "destroys the project code and redirects to index" do
+        expect {
+          delete customer_project_code_path(customer, project_code)
+        }.to change(ProjectCode, :count).by(-1)
+        expect(response).to redirect_to(customer_project_codes_path(customer))
+      end
+    end
+
+    context "when tasks are assigned" do
+      before { create(:task, customer: customer, project_code: project_code) }
+
+      it "does not destroy the project code and redirects with alert" do
+        expect {
+          delete customer_project_code_path(customer, project_code)
+        }.not_to change(ProjectCode, :count)
+        expect(response).to redirect_to(customer_project_codes_path(customer))
+      end
+    end
+  end
+
   describe "PATCH /customers/:customer_id/project_codes/:id/archive" do
     let(:project_code) { create(:project_code, customer: customer, active: true) }
 
