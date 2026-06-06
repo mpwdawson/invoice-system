@@ -1,0 +1,30 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-semibold">Customers</h1>
+  <%= link_to "New Customer", new_customer_path, class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700" %>
+</div>
+
+<table class="w-full text-sm">
+  <thead>
+    <tr class="border-b text-left text-slate-500">
+      <th class="pb-2 font-medium">Name</th>
+      <th class="pb-2 font-medium">Invoice Prefix</th>
+      <th class="pb-2 font-medium">Project Codes</th>
+      <th class="pb-2"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @customers.each do |customer| %>
+      <tr class="border-b hover:bg-slate-50 dark:hover:bg-slate-800">
+        <td class="py-3"><%= link_to customer.name, customer_path(customer), class: "font-medium hover:underline" %></td>
+        <td class="py-3 text-slate-500"><%= customer.invoice_prefix %></td>
+        <td class="py-3"><%= customer.requires_project_codes ? "Yes" : "No" %></td>
+        <td class="py-3 text-right"><%= link_to "Edit", edit_customer_path(customer), class: "text-slate-500 hover:underline text-xs" %></td>
+      </tr>
+    <% end %>
+    <% if @customers.empty? %>
+      <tr>
+        <td colspan="4" class="py-6 text-center text-slate-400">No customers yet.</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

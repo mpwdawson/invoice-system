@@ -1,0 +1,9 @@
+require "rails_helper"
+
+describe Customer, type: :model do
+  subject { build(:customer) }
+
+  describe "validations" do
+    it { is_expected.to validate_presence_of(:name) }
+  end
+end

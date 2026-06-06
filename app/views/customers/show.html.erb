@@ -1,0 +1,31 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-semibold"><%= @customer.name %></h1>
+  <%= link_to "Edit", edit_customer_path(@customer), class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700" %>
+</div>
+
+<dl class="space-y-3 text-sm max-w-lg mb-8">
+  <div class="flex gap-4">
+    <dt class="w-36 text-slate-500 shrink-0">Invoice prefix</dt>
+    <dd><%= @customer.invoice_prefix %></dd>
+  </div>
+  <div class="flex gap-4">
+    <dt class="w-36 text-slate-500 shrink-0">Project codes</dt>
+    <dd><%= @customer.requires_project_codes ? "Required" : "Not required" %></dd>
+  </div>
+  <div class="flex gap-4">
+    <dt class="w-36 text-slate-500 shrink-0">Contact</dt>
+    <dd><%= @customer.contact_name %> <%= mail_to @customer.contact_email, @customer.contact_email if @customer.contact_email.present? %></dd>
+  </div>
+  <div class="flex gap-4">
+    <dt class="w-36 text-slate-500 shrink-0">Address</dt>
+    <dd class="whitespace-pre-line"><%= @customer.address %></dd>
+  </div>
+</dl>
+
+<%= turbo_frame_tag "customer-rates-#{@customer.id}" do %>
+  <%# Rates — added in B-06 %>
+<% end %>
+
+<%= turbo_frame_tag "customer-project-codes-#{@customer.id}" do %>
+  <%# Project codes — added in B-06 %>
+<% end %>

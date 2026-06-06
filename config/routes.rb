@@ -11,6 +11,8 @@ Rails.application.routes.draw do
 
   root "home#index"
 
+  resources :customers, only: [:index, :show, :new, :create, :edit, :update]
+
   get   "settings", to: "settings#edit",   as: :settings
   patch "settings", to: "settings#update"
 

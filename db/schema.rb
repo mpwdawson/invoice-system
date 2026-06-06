@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_06_053557) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_06_054625) do
   create_table "contractor_profiles", force: :cascade do |t|
     t.text "address"
     t.text "bank_details"
@@ -18,6 +18,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_053557) do
     t.string "email"
     t.string "name"
     t.string "tax_number"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "customers", force: :cascade do |t|
+    t.text "address"
+    t.string "contact_email"
+    t.string "contact_name"
+    t.datetime "created_at", null: false
+    t.string "invoice_prefix"
+    t.string "name", null: false
+    t.boolean "requires_project_codes", default: false, null: false
     t.datetime "updated_at", null: false
   end
 end
