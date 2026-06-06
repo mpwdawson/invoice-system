@@ -48,10 +48,12 @@ app/
 
 - Mirror `app/` in `spec/` — files must end in `_spec.rb`.
 - Use active verbs: `it "creates a time entry"` not `it "should create a time entry"`.
+- Use `describe` shorthand — never `RSpec.describe` (rails_helper loads the DSL).
 - Use FactoryBot. Prefer `build` / `build_stubbed` over `create` unless DB persistence is required.
 - Use `let` / `let!` for all named test data. Never use instance variables (`@user`).
 - Use `instance_double` instead of plain `double` to ensure mocked methods exist.
 - Define the primary action under test as `subject { ... }` at the top of `describe`. Always call `subject` explicitly inside `it` blocks.
+- For request specs with varying params: declare `subject { verb path, params: params }` at the describe level; use `context` + `let(:params) { ... }` to vary inputs across cases.
 - Focus on business logic. Do not test standard Rails framework behaviour.
 
 **What to test and when:**
