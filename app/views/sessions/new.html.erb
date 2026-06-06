@@ -1,0 +1,6 @@
+<h1>Sign in</h1>
+
+<%= form_with url: login_path do |f| %>
+  <%= f.password_field :password, placeholder: "Password" %>
+  <%= f.submit "Sign in" %>
+<% end %>

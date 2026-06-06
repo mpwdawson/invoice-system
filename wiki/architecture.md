@@ -99,10 +99,12 @@ Linear, one page per step. State persisted to the invoice record between steps.
 
 ## Authentication
 
-- Single-password session login
-- Password set via `ENV["APP_PASSWORD"]`
-- `SessionsController` with bcrypt or plain ENV comparison — no Devise
-- Session cookie persists across page loads
+- Single-password session login — no Devise, no users table
+- `ENV["APP_PASSWORD_DIGEST"]` holds the SHA256 hex digest of the password
+- Generate: `echo -n "your_password" | sha256sum`
+- `SessionsController` uses `ActiveSupport::SecurityUtils.secure_compare` on SHA256 hashes — constant-time comparison, no timing leak
+- Session cookie (`session[:authenticated]`) persists across page loads
+- See `.env.example` for setup; copy to `.env` and set your digest
 
 ---
 
