@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_06_165140) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_06_231653) do
   create_table "contractor_profiles", force: :cascade do |t|
     t.text "address"
     t.text "bank_details"
@@ -66,8 +66,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_165140) do
     t.index ["status"], name: "index_tasks_on_status"
   end
 
+  create_table "ticket_references", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "number", null: false
+    t.string "prefix", null: false
+    t.integer "task_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["task_id", "prefix", "number"], name: "index_ticket_references_on_task_id_and_prefix_and_number", unique: true
+    t.index ["task_id"], name: "index_ticket_references_on_task_id"
+  end
+
   add_foreign_key "customer_rates", "customers"
   add_foreign_key "project_codes", "customers"
   add_foreign_key "tasks", "customers"
   add_foreign_key "tasks", "project_codes"
+  add_foreign_key "ticket_references", "tasks"
 end
