@@ -94,6 +94,8 @@ Key decisions and rationale. These represent the "why" behind the data model and
 
 **Why:** Deriving the sequence by parsing `MAX(invoice_number)` strings is fragile. An integer column is a clean, indexable, incrementable source of truth. The display format is presentation logic, not schema.
 
+**Prefix is optional:** `Customer.invoice_prefix` is optional. When present, the invoice number is `#{prefix}-#{seq.rjust(4,'0')}` (e.g. `ARGEN-0316`). When absent, the invoice number is just the padded sequence (e.g. `0316`).
+
 **Note:** The user has 10 years of history with their existing sequential numbering and has had no tax issues with it. The global sequence (not per-customer) with customer prefix is intentional and proven.
 
 ---

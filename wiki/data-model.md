@@ -61,7 +61,7 @@ One row. Edited via Settings screen. Enforced as singleton via `first_or_initial
 | address | text | Appears on invoice header |
 | contact_name | string | |
 | contact_email | string | |
-| invoice_prefix | string | e.g. `ARGEN` → invoice numbers like `ARGEN-0316` |
+| invoice_prefix | string | optional. e.g. `ARGEN` → invoice numbers like `ARGEN-0316`. If blank, falls back to just the padded sequence: `0316`. |
 | requires_project_codes | boolean | Whether invoice PDF includes project summary section |
 
 **Currency:** Single-currency assumption (USD) in v1. No currency field. Document if a second customer introduces multi-currency.
@@ -156,7 +156,7 @@ Unique index on `[task_id, prefix, number]`.
 |--------|------|-------|
 | customer_id | integer | |
 | sequence_number | integer | Auto-incremented global integer. Source of truth for ordering. |
-| invoice_number | string | Derived display string: `"#{customer.invoice_prefix}-#{sequence_number.to_s.rjust(4,'0')}"` e.g. `ARGEN-0316` |
+| invoice_number | string | Derived display string: `"#{prefix}-#{seq.rjust(4,'0')}"` if prefix set (e.g. `ARGEN-0316`), else just `"0316"`. |
 | period_start | date | |
 | period_end | date | |
 | status | string | `draft` → `ready` → `sent` → `paid` |
@@ -228,7 +228,7 @@ The project summary is **computed at render time** from TimeEntries stamped with
 ## Invoice Numbering
 
 - `sequence_number` is a plain incrementing integer stored on the invoice
-- Display string derived as `"#{prefix}-#{sequence_number.rjust(4,'0')}"`: `ARGEN-0316`
+- Display string: `"#{prefix}-#{seq.rjust(4,'0')}"` if customer has a prefix (e.g. `ARGEN-0316`); otherwise just the padded number (e.g. `0316`)
 - Counter is global across all customers — one sequence, different prefixes
 - Starting value: 316 (seeded in migration, continuing from existing invoice #0315)
 - Unique index on `sequence_number` — allocated inside a DB transaction to prevent races
