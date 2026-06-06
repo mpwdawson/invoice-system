@@ -11,9 +11,13 @@ Rails.application.routes.draw do
 
   root "home#index"
 
+  resources :tasks, only: [ :index, :show, :new, :create, :edit, :update ] do
+    member { patch :archive }
+  end
+
   resources :customers, only: [ :index, :show, :new, :create, :edit, :update ] do
     resources :customer_rates, only: [ :create, :edit, :update, :destroy ]
-    resources :project_codes,  only: [ :index, :new, :create, :edit, :update ] do
+    resources :project_codes,  only: [ :index, :new, :create, :edit, :update, :destroy ] do
       member { patch :archive }
     end
   end

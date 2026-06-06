@@ -1,0 +1,55 @@
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <p class="text-xs text-slate-500 mb-1"><%= link_to "Tasks", tasks_path, class: "hover:underline" %></p>
+    <h1 class="text-xl font-semibold"><%= @task.title %></h1>
+  </div>
+  <%= link_to "Edit", edit_task_path(@task),
+      class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700" %>
+</div>
+
+<dl class="space-y-3 text-sm max-w-lg mb-8">
+  <div class="flex gap-4">
+    <dt class="w-36 text-slate-500 shrink-0">Customer</dt>
+    <dd><%= link_to @task.customer.name, customer_path(@task.customer), class: "hover:underline" %></dd>
+  </div>
+  <div class="flex gap-4">
+    <dt class="w-36 text-slate-500 shrink-0">Project Code</dt>
+    <dd class="font-mono text-xs"><%= @task.project_code&.code || "—" %></dd>
+  </div>
+  <div class="flex gap-4">
+    <dt class="w-36 text-slate-500 shrink-0">Billable</dt>
+    <dd>
+      <% if @task.billable? %>
+        <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs rounded-full">Yes</span>
+      <% else %>
+        <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-500 text-xs rounded-full">No</span>
+      <% end %>
+    </dd>
+  </div>
+  <div class="flex gap-4">
+    <dt class="w-36 text-slate-500 shrink-0">Invoice Name</dt>
+    <dd>
+      <% if @task.invoice_name.present? %>
+        <%= @task.invoice_name %>
+      <% else %>
+        <span class="text-slate-400 italic">Generated at invoice time</span>
+      <% end %>
+    </dd>
+  </div>
+  <% if @task.notes.present? %>
+    <div class="flex gap-4">
+      <dt class="w-36 text-slate-500 shrink-0">Notes</dt>
+      <dd class="whitespace-pre-line"><%= @task.notes %></dd>
+    </div>
+  <% end %>
+</dl>
+
+<div class="mt-8 max-w-lg border-t pt-6">
+  <h2 class="text-base font-semibold mb-2">Ticket References</h2>
+  <p class="text-sm text-slate-400">Coming in B-08.</p>
+</div>
+
+<div class="mt-6 max-w-lg border-t pt-6">
+  <h2 class="text-base font-semibold mb-2">Time Entries</h2>
+  <p class="text-sm text-slate-400">Coming in B-10.</p>
+</div>

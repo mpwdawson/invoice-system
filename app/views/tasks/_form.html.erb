@@ -1,0 +1,59 @@
+<%= form_with model: @task do |f| %>
+  <% if @task.errors.any? %>
+    <div class="mb-4 p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-300">
+      <ul class="list-disc list-inside space-y-0.5">
+        <% @task.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="space-y-4 max-w-lg">
+    <div>
+      <%= f.label :title, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :title, class: "w-full border rounded px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :customer_id, "Customer", class: "block text-sm font-medium mb-1" %>
+      <%= f.collection_select :customer_id, @customers, :id, :name,
+          { include_blank: "Select a customer" },
+          { class: "w-full border rounded px-3 py-2 text-sm" } %>
+    </div>
+
+    <div>
+      <%= f.label :project_code_id, "Project Code", class: "block text-sm font-medium mb-1" %>
+      <%= f.grouped_collection_select :project_code_id,
+          @customers.select { |c| @project_codes.any? { |pc| pc.customer_id == c.id } },
+          ->(c) { @project_codes.select { |pc| pc.customer_id == c.id } },
+          :name,
+          :id,
+          ->(pc) { "#{pc.code} — #{pc.description}" },
+          { include_blank: "None" },
+          { class: "w-full border rounded px-3 py-2 text-sm" } %>
+    </div>
+
+    <div>
+      <%= f.label :invoice_name, "Invoice Name", class: "block text-sm font-medium mb-1" %>
+      <p class="text-xs text-slate-400 mb-1">Overrides the auto-generated description on the invoice</p>
+      <%= f.text_field :invoice_name, placeholder: "Generated at invoice time",
+          class: "w-full border rounded px-3 py-2 text-sm" %>
+    </div>
+
+    <div>
+      <%= f.label :notes, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :notes, rows: 4, class: "w-full border rounded px-3 py-2 text-sm" %>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <%= f.check_box :billable, class: "rounded border" %>
+      <%= f.label :billable, "Billable", class: "text-sm font-medium" %>
+    </div>
+
+    <div class="flex gap-3 pt-2">
+      <%= f.submit class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700 cursor-pointer" %>
+      <%= link_to "Cancel", tasks_path, class: "px-4 py-2 text-sm text-slate-600 hover:underline dark:text-slate-400" %>
+    </div>
+  </div>
+<% end %>
