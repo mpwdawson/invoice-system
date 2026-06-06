@@ -1,11 +1,14 @@
 class CustomersController < ApplicationController
-  before_action :set_customer, only: [:show, :edit, :update]
+  before_action :set_customer, only: [ :show, :edit, :update ]
 
   def index
-    @customers = Customer.order(:name)
+    @customers = Customer.includes(:customer_rates, :project_codes).order(:name)
   end
 
-  def show; end
+  def show
+    @customer_rates = @customer.customer_rates.order(effective_from: :desc)
+    @current_rate   = CustomerRate.current_for(@customer, Date.today)
+  end
 
   def new
     @customer = Customer.new
@@ -16,7 +19,7 @@ class CustomersController < ApplicationController
     if @customer.save
       redirect_to customer_path(@customer), notice: "Customer created."
     else
-      render :new, formats: [:html], status: :unprocessable_entity
+      render :new, formats: [ :html ], status: :unprocessable_entity
     end
   end
 
@@ -26,7 +29,7 @@ class CustomersController < ApplicationController
     if @customer.update(customer_params)
       redirect_to customer_path(@customer), notice: "Customer updated."
     else
-      render :edit, formats: [:html], status: :unprocessable_entity
+      render :edit, formats: [ :html ], status: :unprocessable_entity
     end
   end
 

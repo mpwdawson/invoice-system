@@ -11,7 +11,12 @@ Rails.application.routes.draw do
 
   root "home#index"
 
-  resources :customers, only: [:index, :show, :new, :create, :edit, :update]
+  resources :customers, only: [ :index, :show, :new, :create, :edit, :update ] do
+    resources :customer_rates, only: [ :create, :edit, :update, :destroy ]
+    resources :project_codes,  only: [ :index, :new, :create, :edit, :update ] do
+      member { patch :archive }
+    end
+  end
 
   get   "settings", to: "settings#edit",   as: :settings
   patch "settings", to: "settings#update"

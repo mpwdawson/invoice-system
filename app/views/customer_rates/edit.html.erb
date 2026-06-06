@@ -1,0 +1,34 @@
+<%= turbo_frame_tag "customer-rates-#{@customer.id}" do %>
+  <div class="mt-6 max-w-lg">
+    <h2 class="text-base font-semibold mb-4">Edit Rate</h2>
+    <% if @rate.errors.any? %>
+      <div class="mb-4 p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-300">
+        <ul class="list-disc list-inside space-y-0.5">
+          <% @rate.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <%= form_with model: [@customer, @rate] do |f| %>
+      <div class="space-y-3">
+        <div>
+          <%= f.label :rate, "Rate ($/hr)", class: "block text-sm font-medium mb-1" %>
+          <%= f.number_field :rate, step: "0.01", min: "0.01", autocomplete: "off",
+              class: "w-36 border rounded px-3 py-2 text-sm" %>
+        </div>
+        <div>
+          <%= f.label :effective_from, "Effective From", class: "block text-sm font-medium mb-1" %>
+          <p class="text-xs text-slate-400 mb-1">Date this rate applies from</p>
+          <%= f.date_field :effective_from, autocomplete: "off",
+              class: "border rounded px-3 py-2 text-sm" %>
+        </div>
+        <div class="flex gap-3 items-center pt-1">
+          <%= f.submit "Save", class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700 cursor-pointer" %>
+          <%= link_to "Cancel", customer_path(@customer),
+              class: "text-sm text-slate-500 hover:underline" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -6,7 +6,7 @@
 <dl class="space-y-3 text-sm max-w-lg mb-8">
   <div class="flex gap-4">
     <dt class="w-36 text-slate-500 shrink-0">Invoice prefix</dt>
-    <dd><%= @customer.invoice_prefix %></dd>
+    <dd><%= @customer.invoice_prefix.presence || "—" %></dd>
   </div>
   <div class="flex gap-4">
     <dt class="w-36 text-slate-500 shrink-0">Project codes</dt>
@@ -22,10 +22,67 @@
   </div>
 </dl>
 
-<%= turbo_frame_tag "customer-rates-#{@customer.id}" do %>
-  <%# Rates — added in B-06 %>
-<% end %>
+<div class="mt-8 max-w-lg">
+  <div class="flex items-center justify-between">
+    <h2 class="text-base font-semibold">Project Codes</h2>
+    <%= link_to "Manage →", customer_project_codes_path(@customer),
+        class: "text-sm text-slate-600 hover:underline dark:text-slate-400" %>
+  </div>
+</div>
 
-<%= turbo_frame_tag "customer-project-codes-#{@customer.id}" do %>
-  <%# Project codes — added in B-06 %>
+<%= turbo_frame_tag "customer-rates-#{@customer.id}" do %>
+  <div class="mt-8 max-w-lg">
+    <h2 class="text-base font-semibold mb-3">Rate History</h2>
+    <% if @customer_rates.any? %>
+      <table class="w-full text-sm mb-4">
+        <thead>
+          <tr class="border-b text-left text-slate-500">
+            <th class="pb-2 font-medium">Effective From</th>
+            <th class="pb-2 font-medium">Rate</th>
+            <th class="pb-2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @customer_rates.each do |rate| %>
+            <tr class="border-b">
+              <td class="py-2"><%= rate.effective_from.strftime("%-d %b %Y") %></td>
+              <td class="py-2">$<%= number_with_precision(rate.rate, precision: 2) %>/hr</td>
+              <td class="py-2 text-right space-x-3">
+                <%= link_to "Edit", edit_customer_customer_rate_path(@customer, rate),
+                    class: "text-xs text-slate-500 hover:underline" %>
+                <%= button_to "Delete", customer_customer_rate_path(@customer, rate),
+                    method: :delete,
+                    data: { turbo_confirm: "Delete this rate?" },
+                    class: "text-xs text-slate-500 hover:underline bg-transparent border-none cursor-pointer p-0" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="text-sm text-slate-400 mb-4">No rates set.</p>
+    <% end %>
+
+    <div class="border-t pt-4">
+      <p class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">Set New Rate</p>
+      <%= form_with url: customer_customer_rates_path(@customer), scope: :customer_rate do |f| %>
+        <div class="flex gap-3 items-end flex-wrap">
+          <div>
+            <%= f.label :rate, "Rate ($/hr)", class: "block text-xs font-medium mb-1" %>
+            <%= f.number_field :rate, step: "0.01", placeholder: "150.00",
+                min: "0.01", autocomplete: "off",
+                class: "w-28 border rounded px-3 py-2 text-sm" %>
+          </div>
+          <div>
+            <%= f.label :effective_from, "Effective From", class: "block text-xs font-medium mb-1" %>
+            <p class="text-xs text-slate-400 mb-1">Date this rate applies from</p>
+            <%= f.date_field :effective_from, value: Date.today,
+                autocomplete: "off",
+                class: "border rounded px-3 py-2 text-sm" %>
+          </div>
+          <%= f.submit "Add Rate", class: "px-3 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700 cursor-pointer self-end" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
 <% end %>
