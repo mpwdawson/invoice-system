@@ -60,7 +60,7 @@ app/
 - **Models:** test-after, immediately after each story. Validations, scopes, key methods.
 - **Service objects:** spec the interface (inputs + expected outputs) *before* implementing — these hold the most complex logic.
 - **Request specs:** auth flow and critical form submissions only. Not exhaustive.
-- **System/Capybara specs:** skip in v1. Logic lives in models/services; browser tests are slow and brittle for a solo tool.
+- **System specs:** Every form that creates or updates a record must have a system spec covering the happy-path submission (`spec/system/`). Run via Cuprite (headless Chrome). These catch missing `scope:`/`model:` on `form_with` — something request specs cannot, because they never exercise the real HTML form.
 - Every story is not complete until its model + service specs are written and green.
 
 ## Key Commands
