@@ -45,8 +45,10 @@
 </dl>
 
 <div class="mt-8 max-w-lg border-t pt-6">
-  <h2 class="text-base font-semibold mb-2">Ticket References</h2>
-  <p class="text-sm text-slate-400">Coming in B-08.</p>
+  <h2 class="text-base font-semibold mb-3">Ticket References</h2>
+  <%= turbo_frame_tag "ticket-refs-#{@task.id}" do %>
+    <%= render 'ticket_references/list', task: @task %>
+  <% end %>
 </div>
 
 <div class="mt-6 max-w-lg border-t pt-6">

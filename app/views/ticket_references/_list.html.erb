@@ -1,0 +1,22 @@
+<div id="ticket-refs-list">
+  <% if task.ticket_references.any? %>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <% task.ticket_references.order(:prefix, :number).each do |ref| %>
+        <div id="ticket-reference-<%= ref.id %>" class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-xs rounded font-mono">
+          <%= ref %>
+          <%= link_to "x", task_ticket_reference_path(task, ref),
+              data: { turbo_method: :delete, turbo_frame: "ticket-refs-#{task.id}" },
+              class: "text-slate-400 hover:text-red-500 leading-none ml-1",
+              aria: { label: "Remove #{ref}" } %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <%= form_with url: task_ticket_references_path(task), data: { turbo_frame: "ticket-refs-#{task.id}" } do |f| %>
+    <div class="flex gap-2">
+      <%= f.text_field :input, placeholder: "AW-1234 & AW-5678",
+          class: "flex-1 border rounded px-3 py-1.5 text-sm dark:bg-slate-800 dark:border-slate-600" %>
+      <%= f.submit "Add", class: "px-3 py-1.5 bg-slate-800 text-white text-sm rounded hover:bg-slate-700 cursor-pointer" %>
+    </div>
+  <% end %>
+</div>

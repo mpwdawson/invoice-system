@@ -15,6 +15,7 @@ Rails.application.routes.draw do
 
   resources :tasks, only: [:index, :show, :new, :create, :edit, :update] do
     member { patch :archive }
+    resources :ticket_references, only: [:create, :destroy]
   end
 
   resources :customers, only: [:index, :show, :new, :create, :edit, :update] do

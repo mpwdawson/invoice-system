@@ -1,0 +1,5 @@
+<%= turbo_stream.replace "ticket-refs-#{@task.id}" do %>
+  <%= turbo_frame_tag "ticket-refs-#{@task.id}" do %>
+    <%= render 'list', task: @task %>
+  <% end %>
+<% end %>
