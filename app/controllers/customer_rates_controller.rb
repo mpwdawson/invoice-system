@@ -17,7 +17,7 @@ class CustomerRatesController < ApplicationController
     if @rate.update(customer_rate_params)
       redirect_to customer_path(@customer), notice: "Rate updated."
     else
-      render :edit, formats: [ :html ], status: :unprocessable_entity
+      render :edit, formats: [ :html ], status: :unprocessable_content
     end
   end
 

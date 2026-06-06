@@ -26,7 +26,7 @@ RSpec.describe "Sessions", type: :request do
       it "does not set the session and re-renders login" do
         post login_path, params: { password: wrong_password }
         expect(session[:authenticated]).to be_nil
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end

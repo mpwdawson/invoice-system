@@ -15,7 +15,7 @@ class ProjectCodesController < ApplicationController
     if @project_code.save
       redirect_to customer_project_codes_path(@customer), notice: "Project code added."
     else
-      render :new, formats: [ :html ], status: :unprocessable_entity
+      render :new, formats: [ :html ], status: :unprocessable_content
     end
   end
 
@@ -25,7 +25,7 @@ class ProjectCodesController < ApplicationController
     if @project_code.update(project_code_params)
       redirect_to customer_project_codes_path(@customer), notice: "Project code updated."
     else
-      render :edit, formats: [ :html ], status: :unprocessable_entity
+      render :edit, formats: [ :html ], status: :unprocessable_content
     end
   end
 
