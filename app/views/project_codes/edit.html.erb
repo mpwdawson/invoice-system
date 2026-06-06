@@ -1,0 +1,10 @@
+<div class="mb-6">
+  <p class="text-xs text-slate-500 mb-1"><%= link_to @customer.name, customer_path(@customer), class: "hover:underline" %> / <%= link_to "Project Codes", customer_project_codes_path(@customer), class: "hover:underline" %></p>
+  <h1 class="text-xl font-semibold">Edit Project Code</h1>
+</div>
+
+<div class="max-w-lg">
+  <%= form_with model: [@customer, @project_code] do |f| %>
+    <%= render "form", f: f, customer: @customer, project_code: @project_code %>
+  <% end %>
+</div>

@@ -1,0 +1,41 @@
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <p class="text-xs text-slate-500 mb-1"><%= link_to @customer.name, customer_path(@customer), class: "hover:underline" %></p>
+    <h1 class="text-xl font-semibold">Project Codes</h1>
+  </div>
+  <%= link_to "New Code", new_customer_project_code_path(@customer),
+      class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700" %>
+</div>
+
+<table class="w-full text-sm">
+  <thead>
+    <tr class="border-b text-left text-slate-500">
+      <th class="pb-2 font-medium">Code</th>
+      <th class="pb-2 font-medium">Description</th>
+      <th class="pb-2 font-medium">Status</th>
+      <th class="pb-2"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @project_codes.each do |code| %>
+      <tr class="border-b hover:bg-slate-50 dark:hover:bg-slate-800 <%= "opacity-50" unless code.active? %>">
+        <td class="py-3 font-mono text-xs"><%= code.code %></td>
+        <td class="py-3"><%= code.description %></td>
+        <td class="py-3 text-slate-500"><%= code.active? ? "Active" : "Archived" %></td>
+        <td class="py-3 text-right space-x-3">
+          <%= link_to "Edit", edit_customer_project_code_path(@customer, code),
+              class: "text-xs text-slate-500 hover:underline" %>
+          <%= button_to code.active? ? "Archive" : "Unarchive",
+              archive_customer_project_code_path(@customer, code),
+              method: :patch,
+              class: "text-xs text-slate-500 hover:underline bg-transparent border-none cursor-pointer p-0" %>
+        </td>
+      </tr>
+    <% end %>
+    <% if @project_codes.empty? %>
+      <tr>
+        <td colspan="4" class="py-6 text-center text-slate-400">No project codes yet.</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
