@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_06_150210) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_06_165140) do
   create_table "contractor_profiles", force: :cascade do |t|
     t.text "address"
     t.text "bank_details"
@@ -51,6 +51,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_150210) do
     t.index ["customer_id"], name: "index_project_codes_on_customer_id"
   end
 
+  create_table "tasks", force: :cascade do |t|
+    t.boolean "billable", default: true, null: false
+    t.datetime "created_at", null: false
+    t.integer "customer_id", null: false
+    t.string "invoice_name"
+    t.text "notes"
+    t.integer "project_code_id"
+    t.string "status", default: "active", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_tasks_on_customer_id"
+    t.index ["project_code_id"], name: "index_tasks_on_project_code_id"
+    t.index ["status"], name: "index_tasks_on_status"
+  end
+
   add_foreign_key "customer_rates", "customers"
   add_foreign_key "project_codes", "customers"
+  add_foreign_key "tasks", "customers"
+  add_foreign_key "tasks", "project_codes"
 end
