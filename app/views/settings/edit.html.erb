@@ -1,6 +1,15 @@
 <h1 class="text-xl font-semibold mb-6">Settings</h1>
 
 <%= form_with model: @profile, url: settings_path, method: :patch do |f| %>
+  <% if @profile.errors.any? %>
+    <div class="mb-4 p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-300">
+      <ul class="list-disc list-inside space-y-0.5">
+        <% @profile.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
   <div class="space-y-4 max-w-lg">
     <div>
       <%= f.label :name, class: "block text-sm font-medium mb-1" %>
