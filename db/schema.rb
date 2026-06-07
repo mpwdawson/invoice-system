@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_07_030618) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_07_195513) do
   create_table "contractor_profiles", force: :cascade do |t|
     t.text "address"
     t.text "bank_details"
@@ -39,6 +39,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_030618) do
     t.string "name", null: false
     t.boolean "requires_project_codes", default: false, null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "invoice_lines", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description", null: false
+    t.integer "invoice_id", null: false
+    t.integer "sort_order", default: 0, null: false
+    t.json "task_ids"
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_invoice_lines_on_invoice_id"
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "customer_id"
+    t.text "notes"
+    t.datetime "paid_at"
+    t.date "period_end"
+    t.date "period_start"
+    t.decimal "rate", precision: 10, scale: 2
+    t.datetime "sent_at"
+    t.integer "sequence_number", null: false
+    t.string "status", default: "draft", null: false
+    t.decimal "total_amount", precision: 10, scale: 2
+    t.decimal "total_hours", precision: 6, scale: 1
+    t.datetime "updated_at", null: false
+    t.integer "wizard_current_step"
+    t.index ["customer_id"], name: "index_invoices_on_customer_id"
+    t.index ["sequence_number"], name: "index_invoices_on_sequence_number", unique: true
+    t.index ["status"], name: "index_invoices_on_status"
   end
 
   create_table "project_codes", force: :cascade do |t|
@@ -90,6 +120,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_030618) do
   end
 
   add_foreign_key "customer_rates", "customers"
+  add_foreign_key "invoice_lines", "invoices"
+  add_foreign_key "invoices", "customers"
   add_foreign_key "project_codes", "customers"
   add_foreign_key "tasks", "customers"
   add_foreign_key "tasks", "project_codes"
