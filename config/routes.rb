@@ -22,6 +22,10 @@ Rails.application.routes.draw do
   get 'reports/daily_log',     to: 'reports#daily_log',     as: :daily_log_report
   get 'reports/task_totals',   to: 'reports#task_totals',   as: :task_totals_report
 
+  get   'invoices/new',                      to: 'invoices/wizard#new',  as: :new_invoice
+  get   'invoices/:invoice_id/wizard/:step', to: 'invoices/wizard#show', as: :invoice_wizard_step
+  patch 'invoices/:invoice_id/wizard/:step', to: 'invoices/wizard#update'
+
   resources :tasks, only: [:index, :show, :new, :create, :edit, :update] do
     collection do
       get  :search
