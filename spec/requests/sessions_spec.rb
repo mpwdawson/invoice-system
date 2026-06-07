@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Sessions' do
+describe SessionsController do
   let(:correct_password) { 'test_password' }
   let(:wrong_password)   { 'wrong' }
 
@@ -15,7 +15,7 @@ RSpec.describe 'Sessions' do
     end
   end
 
-  describe 'POST /login' do
+  describe 'POST #create' do
     context 'with the correct password' do
       it 'sets the session and redirects' do
         post login_path, params: { password: correct_password }
@@ -33,7 +33,7 @@ RSpec.describe 'Sessions' do
     end
   end
 
-  describe 'DELETE /logout' do
+  describe 'DELETE #destroy' do
     before { post login_path, params: { password: correct_password } }
 
     it 'clears the session and redirects to login' do

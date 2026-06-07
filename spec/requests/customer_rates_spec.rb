@@ -2,12 +2,12 @@
 
 require 'rails_helper'
 
-describe 'CustomerRates' do
+describe CustomerRatesController do
   before { post login_path, params: { password: 'test_password' } }
 
   let(:customer) { create(:customer) }
 
-  describe 'POST /customers/:customer_id/customer_rates' do
+  describe 'POST #create' do
     subject { post customer_customer_rates_path(customer), params: params }
 
     context 'with valid params' do
@@ -29,7 +29,7 @@ describe 'CustomerRates' do
     end
   end
 
-  describe 'GET /customers/:customer_id/customer_rates/:id/edit' do
+  describe 'GET #edit' do
     subject { get edit_customer_customer_rate_path(customer, rate) }
 
     let(:rate) { create(:customer_rate, customer: customer) }
@@ -40,7 +40,7 @@ describe 'CustomerRates' do
     end
   end
 
-  describe 'PATCH /customers/:customer_id/customer_rates/:id' do
+  describe 'PATCH #update' do
     subject { patch customer_customer_rate_path(customer, rate), params: params }
 
     let(:rate) { create(:customer_rate, customer: customer) }
@@ -65,7 +65,7 @@ describe 'CustomerRates' do
     end
   end
 
-  describe 'DELETE /customers/:customer_id/customer_rates/:id' do
+  describe 'DELETE #destroy' do
     let!(:rate) { create(:customer_rate, customer: customer) }
 
     it 'destroys the rate and redirects to the customer' do

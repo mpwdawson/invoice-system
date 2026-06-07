@@ -2,10 +2,10 @@
 
 require 'rails_helper'
 
-describe 'Settings' do
+describe SettingsController do
   before { post login_path, params: { password: 'test_password' } }
 
-  describe 'GET /settings' do
+  describe 'GET #edit' do
     subject { get settings_path }
 
     it 'renders the settings form' do
@@ -14,7 +14,7 @@ describe 'Settings' do
     end
   end
 
-  describe 'PATCH /settings' do
+  describe 'PATCH #update' do
     subject { patch settings_path, params: params }
 
     context 'with valid params' do

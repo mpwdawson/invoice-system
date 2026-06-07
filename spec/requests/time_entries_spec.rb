@@ -2,13 +2,13 @@
 
 require 'rails_helper'
 
-describe 'TimeEntries' do
+describe TimeEntriesController do
   before { post login_path, params: { password: 'test_password' } }
 
   let(:customer) { create(:customer) }
   let(:task)     { create(:task, customer: customer) }
 
-  describe 'GET /log' do
+  describe 'GET #log' do
     subject { get log_time_path }
 
     it 'renders the log time screen' do
@@ -17,7 +17,7 @@ describe 'TimeEntries' do
     end
   end
 
-  describe 'GET /time_entries/preview' do
+  describe 'GET #preview' do
     subject { get preview_time_entries_path, params: params }
 
     context 'without a task_id' do
@@ -60,7 +60,7 @@ describe 'TimeEntries' do
     end
   end
 
-  describe 'POST /time_entries' do
+  describe 'POST #create' do
     subject { post time_entries_path, params: params, headers: { 'Accept' => 'text/vnd.turbo-stream.html' } }
 
     context 'with valid params for a new task and date' do
@@ -105,7 +105,7 @@ describe 'TimeEntries' do
     end
   end
 
-  describe 'GET /time_entries/:id/edit' do
+  describe 'GET #edit' do
     subject { get edit_time_entry_path(entry) }
 
     context 'for an unbilled entry' do
@@ -127,7 +127,7 @@ describe 'TimeEntries' do
     end
   end
 
-  describe 'PATCH /time_entries/:id' do
+  describe 'PATCH #update' do
     subject { patch time_entry_path(entry), params: params, headers: { 'Accept' => 'text/vnd.turbo-stream.html' } }
 
     let(:entry) { create(:time_entry, task:, hours: 1.0) }
@@ -156,7 +156,7 @@ describe 'TimeEntries' do
     end
   end
 
-  describe 'DELETE /time_entries/:id' do
+  describe 'DELETE #destroy' do
     context 'for an unbilled entry' do
       subject { delete time_entry_path(entry), headers: { 'Accept' => 'text/vnd.turbo-stream.html' } }
 

@@ -2,12 +2,12 @@
 
 require 'rails_helper'
 
-describe 'ProjectCodes' do
+describe ProjectCodesController do
   before { post login_path, params: { password: 'test_password' } }
 
   let(:customer) { create(:customer) }
 
-  describe 'GET /customers/:customer_id/project_codes' do
+  describe 'GET #index' do
     subject { get customer_project_codes_path(customer) }
 
     it 'renders the index' do
@@ -16,7 +16,7 @@ describe 'ProjectCodes' do
     end
   end
 
-  describe 'GET /customers/:customer_id/project_codes/new' do
+  describe 'GET #new' do
     subject { get new_customer_project_code_path(customer) }
 
     it 'renders the new form' do
@@ -25,7 +25,7 @@ describe 'ProjectCodes' do
     end
   end
 
-  describe 'POST /customers/:customer_id/project_codes' do
+  describe 'POST #create' do
     subject { post customer_project_codes_path(customer), params: params }
 
     context 'with valid params' do
@@ -47,7 +47,7 @@ describe 'ProjectCodes' do
     end
   end
 
-  describe 'GET /customers/:customer_id/project_codes/:id/edit' do
+  describe 'GET #edit' do
     subject { get edit_customer_project_code_path(customer, project_code) }
 
     let(:project_code) { create(:project_code, customer: customer) }
@@ -58,7 +58,7 @@ describe 'ProjectCodes' do
     end
   end
 
-  describe 'PATCH /customers/:customer_id/project_codes/:id' do
+  describe 'PATCH #update' do
     subject { patch customer_project_code_path(customer, project_code), params: params }
 
     let(:project_code) { create(:project_code, customer: customer) }
@@ -83,7 +83,7 @@ describe 'ProjectCodes' do
     end
   end
 
-  describe 'DELETE /customers/:customer_id/project_codes/:id' do
+  describe 'DELETE #destroy' do
     let!(:project_code) { create(:project_code, customer: customer) }
 
     context 'when no tasks are assigned' do
@@ -107,7 +107,7 @@ describe 'ProjectCodes' do
     end
   end
 
-  describe 'PATCH /customers/:customer_id/project_codes/:id/archive' do
+  describe 'PATCH #archive' do
     let(:project_code) { create(:project_code, customer: customer, active: true) }
 
     it 'toggles active to false and redirects to the index' do

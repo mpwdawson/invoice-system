@@ -2,12 +2,12 @@
 
 require 'rails_helper'
 
-describe 'TicketReferences' do
+describe TicketReferencesController do
   before { post login_path, params: { password: 'test_password' } }
 
   let(:task) { create(:task) }
 
-  describe 'POST /tasks/:task_id/ticket_references' do
+  describe 'POST #create' do
     subject { post task_ticket_references_path(task), params: params, headers: { 'Accept' => 'text/vnd.turbo-stream.html' } }
 
     context 'with a valid ticket input' do
@@ -50,7 +50,7 @@ describe 'TicketReferences' do
     end
   end
 
-  describe 'DELETE /tasks/:task_id/ticket_references/:id' do
+  describe 'DELETE #destroy' do
     subject { delete task_ticket_reference_path(task, ref), headers: { 'Accept' => 'text/vnd.turbo-stream.html' } }
 
     let(:ref) { create(:ticket_reference, task: task) }

@@ -2,13 +2,13 @@
 
 require 'rails_helper'
 
-describe 'Tasks' do
+describe TasksController do
   before { post login_path, params: { password: 'test_password' } }
 
   let(:customer) { create(:customer) }
   let(:task)     { create(:task, customer: customer) }
 
-  describe 'GET /tasks' do
+  describe 'GET #index' do
     subject { get tasks_path }
 
     it 'renders the index' do
@@ -40,7 +40,7 @@ describe 'Tasks' do
     end
   end
 
-  describe 'GET /tasks/:id' do
+  describe 'GET #show' do
     subject { get task_path(task) }
 
     it 'renders the show page' do
@@ -49,7 +49,7 @@ describe 'Tasks' do
     end
   end
 
-  describe 'GET /tasks/new' do
+  describe 'GET #new' do
     subject { get new_task_path }
 
     it 'renders the new form' do
@@ -58,7 +58,7 @@ describe 'Tasks' do
     end
   end
 
-  describe 'POST /tasks' do
+  describe 'POST #create' do
     subject { post tasks_path, params: params }
 
     context 'with valid params' do
@@ -80,7 +80,7 @@ describe 'Tasks' do
     end
   end
 
-  describe 'GET /tasks/:id/edit' do
+  describe 'GET #edit' do
     subject { get edit_task_path(task) }
 
     it 'renders the edit form' do
@@ -89,7 +89,7 @@ describe 'Tasks' do
     end
   end
 
-  describe 'PATCH /tasks/:id' do
+  describe 'PATCH #update' do
     subject { patch task_path(task), params: params }
 
     context 'with valid params' do
@@ -112,7 +112,7 @@ describe 'Tasks' do
     end
   end
 
-  describe 'GET /tasks/inline_new' do
+  describe 'GET #inline_new' do
     subject { get inline_new_tasks_path, params: params }
 
     context 'with a title param' do
@@ -130,7 +130,7 @@ describe 'Tasks' do
     end
   end
 
-  describe 'POST /tasks/inline_create' do
+  describe 'POST #inline_create' do
     subject { post inline_create_tasks_path, params: params }
 
     context 'with valid params' do
@@ -161,7 +161,7 @@ describe 'Tasks' do
     end
   end
 
-  describe 'PATCH /tasks/:id/archive' do
+  describe 'PATCH #archive' do
     it 'archives an active task and redirects to index' do
       patch archive_task_path(task)
       expect(task.reload.status).to eq('archived')

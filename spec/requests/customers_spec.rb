@@ -2,10 +2,10 @@
 
 require 'rails_helper'
 
-describe 'Customers' do
+describe CustomersController do
   before { post login_path, params: { password: 'test_password' } }
 
-  describe 'GET /customers' do
+  describe 'GET #index' do
     subject { get customers_path }
 
     it 'renders the index' do
@@ -14,7 +14,7 @@ describe 'Customers' do
     end
   end
 
-  describe 'GET /customers/new' do
+  describe 'GET #new' do
     subject { get new_customer_path }
 
     it 'renders the new form' do
@@ -23,7 +23,7 @@ describe 'Customers' do
     end
   end
 
-  describe 'POST /customers' do
+  describe 'POST #create' do
     subject { post customers_path, params: params }
 
     context 'with valid params' do
@@ -45,7 +45,7 @@ describe 'Customers' do
     end
   end
 
-  describe 'GET /customers/:id/edit' do
+  describe 'GET #edit' do
     subject { get edit_customer_path(customer) }
 
     let(:customer) { create(:customer) }
@@ -56,7 +56,7 @@ describe 'Customers' do
     end
   end
 
-  describe 'PATCH /customers/:id' do
+  describe 'PATCH #update' do
     subject { patch customer_path(customer), params: params }
 
     let(:customer) { create(:customer) }
