@@ -52,6 +52,30 @@
 </div>
 
 <div class="mt-6 max-w-lg border-t pt-6">
-  <h2 class="text-base font-semibold mb-2">Time Entries</h2>
-  <p class="text-sm text-slate-400">Coming in B-10.</p>
+  <h2 class="text-base font-semibold mb-3">Time Entries</h2>
+  <% if @task.time_entries.any? %>
+    <p class="text-sm font-medium mb-3">
+      Total: <%= @task.time_entries.sum(:hours) %>h
+    </p>
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b text-left text-slate-500">
+          <th class="pb-1 font-medium">Date</th>
+          <th class="pb-1 font-medium">Hours</th>
+          <th class="pb-1 font-medium">Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @task.time_entries.order(date: :desc).each do |entry| %>
+          <tr class="border-b last:border-0">
+            <td class="py-2 font-mono text-xs"><%= entry.date %></td>
+            <td class="py-2"><%= entry.hours %>h</td>
+            <td class="py-2 text-slate-500"><%= entry.notes %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="text-sm text-slate-400">No time entries yet.</p>
+  <% end %>
 </div>
