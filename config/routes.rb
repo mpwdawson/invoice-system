@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   root 'time_entries#log'
   get 'log', to: 'time_entries#log', as: :log_time
 
-  resources :time_entries, only: [:create] do
+  resources :time_entries, only: [:show, :create, :edit, :update, :destroy] do
     collection { get :preview }
   end
 

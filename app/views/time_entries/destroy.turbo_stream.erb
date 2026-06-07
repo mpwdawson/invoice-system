@@ -1,0 +1,9 @@
+<% if @soft_lock %>
+  <%= turbo_stream.update dom_id(@time_entry) do %>
+    <%= render 'soft_lock_warning', time_entry: @time_entry %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.update 'time-entries-log' do %>
+    <%= render 'log', log_entries: @log_entries %>
+  <% end %>
+<% end %>

@@ -1,0 +1,27 @@
+<%= turbo_frame_tag dom_id(@time_entry) do %>
+  <div class="px-3 py-2">
+    <% if @time_entry.invoice_id? %>
+      <p class="text-xs text-amber-600 dark:text-amber-400 mb-2">
+        This entry is on a sent invoice. Edits won't change the invoice total.
+      </p>
+    <% end %>
+    <% if @time_entry.errors.any? %>
+      <p class="text-xs text-red-600 dark:text-red-400 mb-2">
+        <%= @time_entry.errors.full_messages.first %>
+      </p>
+    <% end %>
+    <%= form_with model: @time_entry, class: 'flex items-center gap-2 flex-wrap' do |f| %>
+      <%= f.number_field :hours, step: 0.5, min: 0.5,
+          class: 'w-16 rounded border px-2 py-1 text-sm dark:bg-slate-800 dark:border-slate-600' %>
+      <%= f.date_field :date,
+          class: 'rounded border px-2 py-1 text-sm dark:bg-slate-800 dark:border-slate-600' %>
+      <%= f.submit 'Save',
+          class: 'text-sm px-3 py-1 rounded bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 cursor-pointer' %>
+      <%= link_to 'Cancel', time_entry_path(@time_entry),
+          class: 'text-sm text-slate-500 hover:underline' %>
+    <% end %>
+    <%= button_to 'Delete', time_entry_path(@time_entry), method: :delete,
+        form: { data: { turbo_confirm: 'Delete this entry?' } },
+        class: 'mt-1 text-xs text-red-500 hover:underline bg-transparent border-0 p-0 cursor-pointer' %>
+  </div>
+<% end %>

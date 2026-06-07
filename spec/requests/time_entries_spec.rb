@@ -104,4 +104,97 @@ describe 'TimeEntries' do
       end
     end
   end
+
+  describe 'GET /time_entries/:id/edit' do
+    subject { get edit_time_entry_path(entry) }
+
+    context 'for an unbilled entry' do
+      let(:entry) { create(:time_entry, task:) }
+
+      it 'returns ok' do
+        subject
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context 'for a billed entry' do
+      let(:entry) { create(:time_entry, task:, invoice_id: 99) }
+
+      it 'includes a billed warning' do
+        subject
+        expect(response.body).to include('invoice')
+      end
+    end
+  end
+
+  describe 'PATCH /time_entries/:id' do
+    subject { patch time_entry_path(entry), params: params, headers: { 'Accept' => 'text/vnd.turbo-stream.html' } }
+
+    let(:entry) { create(:time_entry, task:, hours: 1.0) }
+
+    context 'with valid hours' do
+      let(:params) { { time_entry: { hours: '2.5', date: entry.date.to_s } } }
+
+      it 'updates the entry' do
+        subject
+        expect(entry.reload.hours).to eq(2.5)
+      end
+
+      it 'returns a turbo stream' do
+        subject
+        expect(response.media_type).to eq('text/vnd.turbo-stream.html')
+      end
+    end
+
+    context 'with invalid hours (zero)' do
+      let(:params) { { time_entry: { hours: '0', date: entry.date.to_s } } }
+
+      it 'returns unprocessable_content' do
+        subject
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+  end
+
+  describe 'DELETE /time_entries/:id' do
+    context 'for an unbilled entry' do
+      subject { delete time_entry_path(entry), headers: { 'Accept' => 'text/vnd.turbo-stream.html' } }
+
+      let!(:entry) { create(:time_entry, task:) }
+
+      it 'deletes the entry' do
+        expect { subject }.to change(TimeEntry, :count).by(-1)
+      end
+
+      it 'returns a turbo stream' do
+        subject
+        expect(response.media_type).to eq('text/vnd.turbo-stream.html')
+      end
+    end
+
+    context 'for a billed entry' do
+      subject { delete time_entry_path(entry), headers: { 'Accept' => 'text/vnd.turbo-stream.html' } }
+
+      let!(:entry) { create(:time_entry, task:, invoice_id: 99) }
+
+      it 'does not delete the entry' do
+        expect { subject }.not_to change(TimeEntry, :count)
+      end
+
+      it 'returns the soft-lock warning' do
+        subject
+        expect(response.body).to include('invoice')
+      end
+    end
+
+    context 'for a billed entry with force param' do
+      subject { delete time_entry_path(entry), params: { force: true }, headers: { 'Accept' => 'text/vnd.turbo-stream.html' } }
+
+      let!(:entry) { create(:time_entry, task:, invoice_id: 99) }
+
+      it 'deletes the entry' do
+        expect { subject }.to change(TimeEntry, :count).by(-1)
+      end
+    end
+  end
 end

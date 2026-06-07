@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 class TimeEntriesController < ApplicationController
+  def show
+    @time_entry = TimeEntry.find(params.expect(:id))
+  end
+
+  def edit
+    @time_entry = TimeEntry.find(params.expect(:id))
+  end
+
   def create
     @time_entry = TimeEntry.log(
       task: Task.find(params.dig(:time_entry, :task_id)),
@@ -14,6 +22,25 @@ class TimeEntriesController < ApplicationController
     @date        = params.dig(:time_entry, :date)
     @log_entries = TimeEntries::RecentLogQuery.call(days: 14)
     render :log, formats: [:html], status: :unprocessable_content
+  end
+
+  def update
+    @time_entry = TimeEntry.find(params.expect(:id))
+    if @time_entry.update(time_entry_params)
+      @log_entries = TimeEntries::RecentLogQuery.call(days: 14)
+    else
+      render :edit, formats: [:html], status: :unprocessable_content
+    end
+  end
+
+  def destroy
+    @time_entry = TimeEntry.find(params.expect(:id))
+    if @time_entry.invoice_id? && params[:force].blank?
+      @soft_lock = true
+    else
+      @time_entry.destroy!
+      @log_entries = TimeEntries::RecentLogQuery.call(days: 14)
+    end
   end
 
   # GET /log — primary daily entry screen
@@ -35,5 +62,11 @@ class TimeEntriesController < ApplicationController
     @existing       = @task && TimeEntry.find_by(task: @task, date: @date)
     @existing_hours = @existing&.hours.to_d
     @total          = @existing_hours + @hours
+  end
+
+  private
+
+  def time_entry_params
+    params.expect(time_entry: %i[hours date])
   end
 end
