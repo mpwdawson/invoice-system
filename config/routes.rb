@@ -18,6 +18,8 @@ Rails.application.routes.draw do
     collection { get :preview }
   end
 
+  get 'reports/monthly_hours', to: 'reports#monthly_hours', as: :monthly_hours_report
+
   resources :tasks, only: [:index, :show, :new, :create, :edit, :update] do
     collection do
       get  :search
