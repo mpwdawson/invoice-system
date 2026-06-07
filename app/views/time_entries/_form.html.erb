@@ -1,0 +1,56 @@
+<%= form_with url: time_entries_path,
+              data: { controller: "time-entry-form" } do %>
+  <div class="space-y-4">
+
+    <div>
+      <label class="block text-xs font-medium mb-1">Date</label>
+      <input type="date"
+             name="time_entry[date]"
+             value="<%= date %>"
+             class="border rounded px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600"
+             data-time-entry-form-target="dateInput"
+             data-action="change->time-entry-form#updatePreview">
+    </div>
+
+    <div class="relative">
+      <label class="block text-xs font-medium mb-1">Task</label>
+      <input type="text"
+             placeholder="Search tasks…"
+             autocomplete="off"
+             class="border rounded px-3 py-2 text-sm w-full dark:bg-slate-800 dark:border-slate-600"
+             data-time-entry-form-target="taskInput"
+             data-action="input->time-entry-form#searchTask">
+      <input type="hidden"
+             name="time_entry[task_id]"
+             data-time-entry-form-target="taskIdInput">
+      <turbo-frame id="task-search-results"
+                   data-time-entry-form-target="dropdownFrame"
+                   class="absolute z-10 w-full top-full left-0">
+      </turbo-frame>
+    </div>
+
+    <div>
+      <label class="block text-xs font-medium mb-1">Hours</label>
+      <input type="number"
+             name="time_entry[hours]"
+             step="0.5"
+             min="0.5"
+             placeholder="1.5"
+             class="border rounded px-3 py-2 text-sm w-32 dark:bg-slate-800 dark:border-slate-600"
+             data-time-entry-form-target="hoursInput"
+             data-action="change->time-entry-form#updatePreview">
+    </div>
+
+    <turbo-frame id="time-entry-preview"
+                 data-time-entry-form-target="previewFrame">
+    </turbo-frame>
+
+    <div>
+      <button type="submit"
+              class="px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500">
+        Log Hours
+      </button>
+    </div>
+
+  </div>
+<% end %>

@@ -11,9 +11,15 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  root 'home#index'
+  root 'time_entries#log'
+  get 'log', to: 'time_entries#log', as: :log_time
+
+  resources :time_entries, only: [:create] do
+    collection { get :preview }
+  end
 
   resources :tasks, only: [:index, :show, :new, :create, :edit, :update] do
+    collection { get :search }
     member { patch :archive }
     resources :ticket_references, only: [:create, :destroy]
   end

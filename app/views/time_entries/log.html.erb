@@ -1,0 +1,15 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-semibold">Log Time</h1>
+</div>
+
+<% if @error %>
+  <p class="mb-4 text-sm text-red-600"><%= @error %></p>
+<% end %>
+
+<div id="time-entry-form-wrapper" class="max-w-lg">
+  <%= render 'form', date: @date %>
+</div>
+
+<div id="time-entries-log" class="mt-8">
+  <%# B-13 renders the 14-day history log here %>
+</div>

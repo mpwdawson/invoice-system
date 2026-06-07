@@ -1,0 +1,20 @@
+<%= turbo_frame_tag "time-entry-preview" do %>
+  <% if @task %>
+    <div class="border rounded p-3 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 space-y-1">
+      <p class="font-medium"><%= @task.title %></p>
+      <p class="text-slate-500 text-xs">
+        <%= @task.customer.name %>
+        <% if @task.project_code %>
+          &middot; <span class="font-mono"><%= @task.project_code.code %></span>
+        <% end %>
+      </p>
+      <p class="text-slate-700 dark:text-slate-300">
+        <% if @existing_hours > 0 %>
+          Already <%= @existing_hours %>h today &rarr; adding <%= @hours %>h &rarr; total: <strong><%= @total %>h</strong>
+        <% else %>
+          Adding <%= @hours %>h &rarr; total: <strong><%= @total %>h</strong>
+        <% end %>
+      </p>
+    </div>
+  <% end %>
+<% end %>
