@@ -1,0 +1,15 @@
+<li>
+  <a href="#"
+     class="block px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
+     data-action="click->time-entry-form#selectTask"
+     data-task-id="<%= task.id %>"
+     data-task-title="<%= task.title %>">
+    <span class="font-medium"><%= task.title %></span>
+    <span class="text-xs text-slate-500 ml-2">
+      <%= task.customer.name %>
+      <% if task.project_code %>
+        &middot; <span class="font-mono"><%= task.project_code.code %></span>
+      <% end %>
+    </span>
+  </a>
+</li>

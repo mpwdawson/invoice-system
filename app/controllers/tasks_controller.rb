@@ -43,6 +43,10 @@ class TasksController < ApplicationController
     end
   end
 
+  def search
+    @tasks = Tasks::SearchQuery.call(query: params[:query], status: 'active')
+  end
+
   def archive
     @task.active? ? @task.archived! : @task.active!
     redirect_to tasks_path
