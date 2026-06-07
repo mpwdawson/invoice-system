@@ -113,7 +113,7 @@ Auth + Profile   Customers         Tasks         Quick Entry     Monthly      Wi
 - Import report: X entries created, Y skipped (duplicate), Z tasks created, W tasks matched
 
 **Tech notes:**
-- The `parse_final.rb` script in the project root is a starting reference for the parsing logic. **⚠ Audit required before use:** it was AI-generated (OpenCode/Qwen) and has not been reviewed. Read critically, verify against real input edge cases, and rewrite freely if the implementation is unclear or incorrect.
+- Write `Import::ParseLogService` from scratch — the original parse scripts have been deleted.
 - Import is a one-time operation — no need for scheduled or recurring import
 
 ---

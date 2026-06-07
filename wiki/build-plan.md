@@ -315,11 +315,9 @@ B-00 rails new (OS setup, Ruby, gems)
 ### Phase 5 — Data Import (S-06)
 
 #### B-15: Import parser
-**Goal:** Parse Excel work log format into structured data. **Read and audit `parse_final.rb` before writing a line.**
+**Goal:** Parse Excel work log format into structured data.
 
 **Key files:** `app/services/import/parse_log_service.rb`
-
-**⚠ Audit required:** `parse_final.rb` was AI-generated (OpenCode/Qwen) and has not been reviewed. Also check `parse_logs.rb`, `parse_logs2.rb`, `parse_logs3.rb` in the project root — they may contain useful variants. Extract what's correct, rewrite what isn't.
 
 **⚠ Decide the date-derivation rule before writing the spec:** The input format uses row-position dates ("each line = one day, rows are sequential"). Confirm whether an explicit date header line is also supported, and what day-zero is. This must be resolved before the spec can be written.
 
