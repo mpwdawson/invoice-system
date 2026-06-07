@@ -31,6 +31,7 @@ class ProjectCodesController < ApplicationController
     end
   end
 
+  # PATCH /customers/:customer_id/project_codes/:id/archive — toggles active/inactive
   def archive
     @project_code.update!(active: !@project_code.active)
     redirect_to customer_project_codes_path(@customer)
