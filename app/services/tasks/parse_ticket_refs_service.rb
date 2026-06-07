@@ -11,9 +11,13 @@ module Tasks
     end
 
     def call
-      @input.scan(/([A-Za-z]+)-(\d+)/)
+      input.scan(/([A-Za-z]+)-(\d+)/)
         .map { |prefix, number| { prefix: prefix.upcase, number: number.to_i } }
         .uniq
     end
+
+    private
+
+    attr_reader :input
   end
 end
