@@ -7,16 +7,19 @@ class TimeEntriesController < ApplicationController
       date: params.dig(:time_entry, :date),
       hours: params.dig(:time_entry, :hours).to_d
     )
-    @date = params.dig(:time_entry, :date)
+    @date        = params.dig(:time_entry, :date)
+    @log_entries = TimeEntries::RecentLogQuery.call(days: 14)
   rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid => e
-    @error = e.try(:record)&.errors&.full_messages&.first || e.message
-    @date  = params.dig(:time_entry, :date)
+    @error       = e.try(:record)&.errors&.full_messages&.first || e.message
+    @date        = params.dig(:time_entry, :date)
+    @log_entries = TimeEntries::RecentLogQuery.call(days: 14)
     render :log, formats: [:html], status: :unprocessable_content
   end
 
   # GET /log — primary daily entry screen
   def log
-    @date = params[:date].presence || Date.current.to_s
+    @date        = params[:date].presence || Date.current.to_s
+    @log_entries = TimeEntries::RecentLogQuery.call(days: 14)
   end
 
   # GET /time_entries/preview — Turbo Frame running-total panel, updated on field change

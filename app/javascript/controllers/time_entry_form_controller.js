@@ -29,6 +29,12 @@ export default class extends Controller {
     this.updatePreview()
   }
 
+  setDate(event) {
+    this.dateInputTarget.value = event.currentTarget.dataset.date
+    this.dateInputTarget.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    this.updatePreview()
+  }
+
   autoSelectSlotTargetConnected(el) {
     this.taskIdInputTarget.value = el.dataset.taskId
     this.taskInputTarget.value   = el.dataset.taskTitle
