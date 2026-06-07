@@ -3,7 +3,8 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "dateInput", "taskInput", "taskIdInput",
-    "hoursInput", "previewFrame", "dropdownFrame"
+    "hoursInput", "previewFrame", "dropdownFrame",
+    "autoSelectSlot"
   ]
 
   searchTask() {
@@ -25,6 +26,13 @@ export default class extends Controller {
     this.taskIdInputTarget.value = el.dataset.taskId
     this.taskInputTarget.value   = el.dataset.taskTitle
     this.dropdownFrameTarget.innerHTML = ""
+    this.updatePreview()
+  }
+
+  autoSelectSlotTargetConnected(el) {
+    this.taskIdInputTarget.value = el.dataset.taskId
+    this.taskInputTarget.value   = el.dataset.taskTitle
+    el.remove()
     this.updatePreview()
   }
 

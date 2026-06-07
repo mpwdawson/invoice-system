@@ -5,5 +5,15 @@
         <%= render 'search_result', task: task %>
       <% end %>
     </ul>
+  <% elsif @query.present? %>
+    <ul class="border rounded shadow-lg bg-white dark:bg-slate-800 dark:border-slate-600">
+      <li>
+        <%= link_to inline_new_tasks_path(title: @query),
+            class: "block px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer" do %>
+          <span class="text-slate-400 text-xs">No tasks found.</span>
+          <span class="font-medium ml-2">Create "<%= @query %>"</span>
+        <% end %>
+      </li>
+    </ul>
   <% end %>
 <% end %>

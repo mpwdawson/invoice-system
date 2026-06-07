@@ -19,7 +19,11 @@ Rails.application.routes.draw do
   end
 
   resources :tasks, only: [:index, :show, :new, :create, :edit, :update] do
-    collection { get :search }
+    collection do
+      get  :search
+      get  :inline_new
+      post :inline_create
+    end
     member { patch :archive }
     resources :ticket_references, only: [:create, :destroy]
   end

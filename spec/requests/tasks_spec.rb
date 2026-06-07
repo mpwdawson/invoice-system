@@ -112,6 +112,55 @@ describe 'Tasks' do
     end
   end
 
+  describe 'GET /tasks/inline_new' do
+    subject { get inline_new_tasks_path, params: params }
+
+    context 'with a title param' do
+      let(:params) { { title: 'New Feature Work' } }
+
+      it 'returns 200' do
+        subject
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'pre-fills the title in the response' do
+        subject
+        expect(response.body).to include('New Feature Work')
+      end
+    end
+  end
+
+  describe 'POST /tasks/inline_create' do
+    subject { post inline_create_tasks_path, params: params }
+
+    context 'with valid params' do
+      let(:params) { { task: { title: 'Design homepage', customer_id: customer.id } } }
+
+      it 'creates a task' do
+        expect { subject }.to change(Task, :count).by(1)
+      end
+
+      it 'returns 200 with auto-select content containing the task id' do
+        subject
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include(Task.last.id.to_s)
+      end
+    end
+
+    context 'with invalid params (blank title)' do
+      let(:params) { { task: { title: '', customer_id: customer.id } } }
+
+      it 'does not create a task' do
+        expect { subject }.not_to change(Task, :count)
+      end
+
+      it 'returns unprocessable_content' do
+        subject
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+  end
+
   describe 'PATCH /tasks/:id/archive' do
     it 'archives an active task and redirects to index' do
       patch archive_task_path(task)

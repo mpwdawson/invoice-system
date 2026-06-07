@@ -43,10 +43,28 @@ class TasksController < ApplicationController
     end
   end
 
+  # GET /tasks/search — Turbo Frame autocomplete dropdown
   def search
-    @tasks = Tasks::SearchQuery.call(query: params[:query], status: 'active')
+    @query = params[:query]
+    @tasks = Tasks::SearchQuery.call(query: @query, status: 'active')
   end
 
+  # GET /tasks/inline_new — compact create form inside the Log Time search dropdown
+  def inline_new
+    @task = Task.new(title: params[:title])
+    load_form_data
+  end
+
+  # POST /tasks/inline_create — creates task and returns auto-select slot for the entry form
+  def inline_create
+    @task = Task.new(inline_task_params)
+    return if @task.save
+
+    load_form_data
+    render :inline_new, formats: [:html], status: :unprocessable_content
+  end
+
+  # PATCH /tasks/:id/archive
   def archive
     @task.active? ? @task.archived! : @task.active!
     redirect_to tasks_path
@@ -72,5 +90,9 @@ class TasksController < ApplicationController
   def task_params
     params.expect(task: [:customer_id, :project_code_id, :title,
                          :invoice_name, :notes, :billable])
+  end
+
+  def inline_task_params
+    params.expect(task: [:title, :customer_id, :project_code_id])
   end
 end
