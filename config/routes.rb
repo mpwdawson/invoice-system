@@ -19,6 +19,8 @@ Rails.application.routes.draw do
   end
 
   get 'reports/monthly_hours', to: 'reports#monthly_hours', as: :monthly_hours_report
+  get 'reports/daily_log',     to: 'reports#daily_log',     as: :daily_log_report
+  get 'reports/task_totals',   to: 'reports#task_totals',   as: :task_totals_report
 
   resources :tasks, only: [:index, :show, :new, :create, :edit, :update] do
     collection do

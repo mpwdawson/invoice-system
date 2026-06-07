@@ -1,0 +1,5 @@
+<nav class="flex gap-2 mb-6 text-sm border-b dark:border-slate-700 pb-3">
+  <% { 'Monthly Hours' => monthly_hours_report_path, 'Daily Log' => daily_log_report_path, 'Task Totals' => task_totals_report_path }.each do |label, path| %>
+    <%= link_to label, path, class: "px-2 py-1 rounded #{current_page?(path) ? 'font-semibold text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}" %>
+  <% end %>
+</nav>

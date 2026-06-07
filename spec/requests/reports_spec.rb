@@ -31,4 +31,22 @@ describe ReportsController do
       expect(response.media_type).to eq('text/csv')
     end
   end
+
+  describe 'GET #daily_log' do
+    subject { get daily_log_report_path }
+
+    it 'returns ok' do
+      subject
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  describe 'GET #task_totals' do
+    subject { get task_totals_report_path }
+
+    it 'returns ok' do
+      subject
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
