@@ -4,10 +4,12 @@ class TasksController < ApplicationController
   before_action :set_task, only: [:show, :edit, :update, :archive]
 
   def index
-    @tasks = Task.includes(:customer, :project_code).ordered
-    @tasks = @tasks.where(customer_id: params[:customer_id]) if params[:customer_id].present?
-    @tasks = @tasks.where(status: params[:status].presence || 'active')
-    @tasks = @tasks.where(billable: true) if params[:billable] == 'true'
+    @tasks = Tasks::SearchQuery.call(
+      query: params[:query],
+      customer_id: params[:customer_id],
+      status: params[:status].presence || 'active',
+      billable: params[:billable]
+    )
     @customers = Customer.order(:name)
   end
 

@@ -14,4 +14,16 @@ describe 'Tasks' do
     click_button 'Create Task'
     expect(page).to have_text('Design homepage')
   end
+
+  it 'searches tasks by title' do
+    create(:task, title: 'Design homepage', customer: customer)
+    create(:task, title: 'Write tests', customer: customer)
+
+    visit tasks_path
+    fill_in 'Search', with: 'Design'
+    click_button 'Filter'
+
+    expect(page).to have_text('Design homepage')
+    expect(page).to have_no_text('Write tests')
+  end
 end

@@ -15,6 +15,29 @@ describe 'Tasks' do
       subject
       expect(response).to have_http_status(:ok)
     end
+
+    context 'with a title query' do
+      it 'returns 200' do
+        get tasks_path, params: { query: task.title }
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context 'with a ticket ref query' do
+      before { create(:ticket_reference, task: task, prefix: 'AW', number: 6770) }
+
+      it 'returns 200' do
+        get tasks_path, params: { query: 'AW-6770' }
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context 'with a query matching nothing' do
+      it 'returns 200' do
+        get tasks_path, params: { query: 'zzz_no_match' }
+        expect(response).to have_http_status(:ok)
+      end
+    end
   end
 
   describe 'GET /tasks/:id' do
