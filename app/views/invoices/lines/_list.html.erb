@@ -1,0 +1,25 @@
+<div data-controller="sortable">
+  <% if lines.any? %>
+    <div class="space-y-2 mb-4">
+      <% lines.each do |line| %>
+        <%= render 'invoices/lines/line', invoice: invoice, line: line, available_tasks: available_tasks %>
+      <% end %>
+    </div>
+    <%# Hidden form — populated with line_ids[] by the sortable controller on drag-end %>
+    <%= form_with url: sort_invoice_lines_path(invoice), method: :patch,
+          class: 'hidden', data: { sortable_target: 'form' } do %>
+    <% end %>
+    <p class="text-xs text-slate-400 mb-4">Drag a line to reorder.</p>
+  <% else %>
+    <p class="text-sm text-slate-400 mb-4">No description lines yet — add one below.</p>
+  <% end %>
+
+  <%= form_with model: new_line, url: invoice_lines_path(invoice) do |f| %>
+    <div class="border rounded p-3 dark:border-slate-700">
+      <p class="text-xs font-medium text-slate-500 mb-2">Add a line</p>
+      <%= render 'invoices/lines/line_fields', f: f, available_tasks: available_tasks %>
+      <%= f.submit 'Add line',
+            class: 'mt-2 px-3 py-1.5 text-sm rounded bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900' %>
+    </div>
+  <% end %>
+</div>

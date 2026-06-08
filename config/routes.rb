@@ -26,6 +26,12 @@ Rails.application.routes.draw do
   get   'invoices/:invoice_id/wizard/:step', to: 'invoices/wizard#show', as: :invoice_wizard_step
   patch 'invoices/:invoice_id/wizard/:step', to: 'invoices/wizard#update'
 
+  resources :invoices, only: [] do
+    resources :lines, only: [:index, :create, :update, :destroy], controller: 'invoices/lines' do
+      collection { patch :sort }
+    end
+  end
+
   resources :tasks, only: [:index, :show, :new, :create, :edit, :update] do
     collection do
       get  :search
