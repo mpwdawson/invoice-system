@@ -1,0 +1,29 @@
+<h1 class="text-xl font-semibold mb-2">Import Work Log</h1>
+
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-2xl">
+  Paste rows copied straight from Excel — one row per day, tab-separated
+  <span class="font-mono text-xs">Date</span>, <span class="font-mono text-xs">Time</span> and
+  <span class="font-mono text-xs">Notes</span> columns. You'll see a preview of what will be
+  created before anything is saved.
+</p>
+
+<%= form_with url: preview_import_path, data: { turbo: false } do |f| %>
+  <div class="space-y-4 max-w-2xl">
+    <div>
+      <%= f.label :customer_id, "Customer", class: "block text-xs font-medium mb-1" %>
+      <%= f.collection_select :customer_id, @customers, :id, :name,
+            { prompt: "Select a customer" },
+            { class: "border rounded px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600" } %>
+    </div>
+
+    <div>
+      <%= f.label :text, "Pasted rows", class: "block text-xs font-medium mb-1" %>
+      <%= f.text_area :text, rows: 16,
+            placeholder: "6/1/2026\t11\tAW-6522 DesignRequest Refactor (5), QA Support (0.5)",
+            class: "w-full border rounded px-3 py-2 text-sm font-mono dark:bg-slate-800 dark:border-slate-600" %>
+    </div>
+
+    <%= f.submit "Preview",
+          class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500" %>
+  </div>
+<% end %>

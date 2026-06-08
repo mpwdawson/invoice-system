@@ -1,0 +1,83 @@
+<h1 class="text-xl font-semibold mb-2">Import Preview</h1>
+
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6">
+  Customer: <span class="font-medium text-slate-900 dark:text-white"><%= @customer.name %></span>
+  — review the matched/new tasks below, assign project codes where needed, then commit.
+</p>
+
+<%= form_with url: import_path, data: { turbo: false } do |f| %>
+  <%= hidden_field_tag :customer_id, @customer.id %>
+  <%= hidden_field_tag :text, @text %>
+
+  <% if @preview.new_tasks.any? %>
+    <section class="mb-8">
+      <h2 class="text-sm font-semibold mb-3">New tasks to be created</h2>
+      <div class="space-y-2 max-w-2xl">
+        <% @preview.new_tasks.each_with_index do |new_task, index| %>
+          <div class="flex items-center gap-3 p-3 border rounded dark:border-slate-600">
+            <%= hidden_field_tag "corrections[#{index}][key]", new_task.key %>
+            <div class="flex-1">
+              <span class="font-medium text-sm"><%= new_task.title %></span>
+              <% new_task.ticket_refs.each do |ref| %>
+                <span class="font-mono text-xs text-slate-400 ml-2"><%= ref[:prefix] %>-<%= ref[:number] %></span>
+              <% end %>
+            </div>
+            <div>
+              <%= label_tag "corrections[#{index}][project_code_id]", "Project code", class: "block text-xs text-slate-500 mb-1" %>
+              <%= select_tag "corrections[#{index}][project_code_id]",
+                    options_from_collection_for_select(@project_codes, :id, ->(pc) { "#{pc.code} — #{pc.description}" }),
+                    include_blank: "None",
+                    class: "rounded border px-2 py-1.5 text-sm dark:bg-slate-800 dark:border-slate-600" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <section class="mb-8">
+    <h2 class="text-sm font-semibold mb-3">Proposed time entries</h2>
+    <div class="space-y-6 max-w-3xl">
+      <% @preview.days.each do |day| %>
+        <div>
+          <div class="flex items-baseline gap-3 mb-2">
+            <h3 class="text-sm font-medium"><%= day.date.strftime("%a %-m/%-d/%Y") %></h3>
+            <span class="text-xs text-slate-500">
+              stated <%= day.stated_hours %>h · parsed <%= day.parsed_hours %>h
+              <% if day.stated_hours != day.parsed_hours %>
+                <span class="text-amber-600">⚠ mismatch</span>
+              <% end %>
+            </span>
+          </div>
+          <div class="divide-y border rounded dark:border-slate-600 dark:divide-slate-600">
+            <% day.rows.each do |row| %>
+              <div class="flex items-center gap-3 px-3 py-2 text-sm">
+                <span class="flex-1 truncate">
+                  <%= row.title %>
+                  <% row.ticket_refs.each do |ref| %>
+                    <span class="font-mono text-xs text-slate-400 ml-1"><%= ref[:prefix] %>-<%= ref[:number] %></span>
+                  <% end %>
+                </span>
+                <span class="tabular-nums text-slate-500 w-10 text-right">
+                  <%= row.hours ? "#{row.hours}h" : "—" %>
+                </span>
+                <% if row.duplicate %>
+                  <span class="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300">⚠ duplicate — will skip</span>
+                <% elsif row.hours.nil? %>
+                  <span class="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300">⚠ no hours — will skip</span>
+                <% elsif row.matched_task %>
+                  <span class="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">→ <%= row.matched_task.title %></span>
+                <% else %>
+                  <span class="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">new task</span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <%= f.submit "Commit Import",
+        class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500" %>
+<% end %>

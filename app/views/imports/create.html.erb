@@ -1,0 +1,16 @@
+<h1 class="text-xl font-semibold mb-6">Import Complete</h1>
+
+<div class="max-w-md space-y-1.5 text-sm mb-6">
+  <p><span class="font-medium tabular-nums"><%= @result.entries_created %></span> time entries created</p>
+  <p><span class="font-medium tabular-nums"><%= @result.skipped_duplicates %></span> skipped (duplicate)</p>
+  <p><span class="font-medium tabular-nums"><%= @result.skipped_missing_hours %></span> skipped (no hours detected)</p>
+  <p><span class="font-medium tabular-nums"><%= @result.tasks_created %></span> tasks created</p>
+  <p><span class="font-medium tabular-nums"><%= @result.tasks_matched %></span> tasks matched</p>
+</div>
+
+<div class="flex gap-3">
+  <%= link_to "Go to Log Time", log_time_path,
+        class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500" %>
+  <%= link_to "View Tasks", tasks_path,
+        class: "px-4 py-2 bg-slate-100 dark:bg-slate-700 text-sm rounded hover:bg-slate-200 dark:hover:bg-slate-600" %>
+</div>

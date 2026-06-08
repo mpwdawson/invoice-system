@@ -18,6 +18,10 @@ Rails.application.routes.draw do
     collection { get :preview }
   end
 
+  get  'import',         to: 'imports#new',     as: :new_import
+  post 'import/preview', to: 'imports#preview', as: :preview_import
+  post 'import',         to: 'imports#create'
+
   get 'reports/monthly_hours', to: 'reports#monthly_hours', as: :monthly_hours_report
   get 'reports/daily_log',     to: 'reports#daily_log',     as: :daily_log_report
   get 'reports/task_totals',   to: 'reports#task_totals',   as: :task_totals_report
