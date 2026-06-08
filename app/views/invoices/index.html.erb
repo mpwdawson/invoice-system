@@ -1,0 +1,38 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-semibold">Invoices</h1>
+  <%= link_to "New Invoice", new_invoice_path, class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700" %>
+</div>
+
+<table class="w-full text-sm">
+  <thead>
+    <tr class="border-b text-left text-slate-500">
+      <th class="pb-2 font-medium">Invoice #</th>
+      <th class="pb-2 font-medium">Customer</th>
+      <th class="pb-2 font-medium">Period</th>
+      <th class="pb-2 font-medium">Status</th>
+      <th class="pb-2 font-medium text-right">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @invoices.each do |invoice| %>
+      <tr class="border-b hover:bg-slate-50 dark:hover:bg-slate-800">
+        <td class="py-3">
+          <%= link_to invoice.invoice_number,
+                invoice.draft? ? invoice_wizard_step_path(invoice, step: invoice.wizard_current_step || 1) : invoice_path(invoice),
+                class: "font-medium hover:underline" %>
+        </td>
+        <td class="py-3 text-slate-600 dark:text-slate-400"><%= invoice.customer&.name || "—" %></td>
+        <td class="py-3 text-slate-500"><%= invoice.period_start %> – <%= invoice.period_end %></td>
+        <td class="py-3"><%= invoice_status_badge(invoice.status) %></td>
+        <td class="py-3 text-right tabular-nums">
+          <%= invoice.total_amount.present? ? "$#{number_with_precision(invoice.total_amount, precision: 2)}" : "—" %>
+        </td>
+      </tr>
+    <% end %>
+    <% if @invoices.empty? %>
+      <tr>
+        <td colspan="5" class="py-6 text-center text-slate-400">No invoices yet.</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

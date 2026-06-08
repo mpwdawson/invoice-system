@@ -15,6 +15,7 @@ describe 'Invoice Wizard' do
   it 'picks a customer + period, sees the rate populate, and reviews un-billed entries' do
     visit root_path
     click_on 'Invoices'
+    click_on 'New Invoice'
 
     expect(page).to have_text('1. Customer + Date Range')
     expect(page).to have_text('Step 1 — Customer + Date Range')

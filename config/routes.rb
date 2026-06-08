@@ -27,7 +27,12 @@ Rails.application.routes.draw do
   patch 'invoices/:invoice_id/wizard/:step', to: 'invoices/wizard#update'
   patch 'invoices/:invoice_id/finalize',     to: 'invoices/wizard#finalize', as: :finalize_invoice
 
-  resources :invoices, only: [] do
+  resources :invoices, only: [:index, :show] do
+    member do
+      patch :mark_sent
+      patch :mark_paid
+    end
+
     resources :lines, only: [:index, :create, :update, :destroy], controller: 'invoices/lines' do
       collection { patch :sort }
     end
