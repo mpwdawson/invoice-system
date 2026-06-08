@@ -1,4 +1,32 @@
-<div class="text-sm text-slate-500 dark:text-slate-400">
-  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-2">Step 1 — Customer + Date Range</h2>
-  <p>Coming in B-20: pick a customer and billing period; the rate auto-populates from the customer's current rate.</p>
+<div>
+  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-4">Step 1 — Customer + Date Range</h2>
+
+  <div class="flex flex-wrap gap-3 items-end">
+    <div>
+      <label class="block text-xs text-slate-500 mb-1">Customer</label>
+      <%= form.collection_select :customer_id, @customers, :id, :name,
+            { prompt: 'Select customer' },
+            class: 'rounded border px-2 py-1.5 text-sm dark:bg-slate-800 dark:border-slate-600' %>
+    </div>
+    <div>
+      <label class="block text-xs text-slate-500 mb-1">Period start</label>
+      <%= form.date_field :period_start,
+            class: 'rounded border px-2 py-1.5 text-sm dark:bg-slate-800 dark:border-slate-600' %>
+    </div>
+    <div>
+      <label class="block text-xs text-slate-500 mb-1">Period end</label>
+      <%= form.date_field :period_end,
+            class: 'rounded border px-2 py-1.5 text-sm dark:bg-slate-800 dark:border-slate-600' %>
+    </div>
+  </div>
+
+  <p class="text-sm text-slate-500 mt-4">
+    <% if @invoice.rate.present? %>
+      Rate: <span class="font-medium text-slate-900 dark:text-white">$<%= number_with_precision(@invoice.rate, precision: 2) %>/hr</span>
+    <% elsif @invoice.customer.present? && @invoice.period_start.present? %>
+      <span class="text-amber-600">No rate found for <%= @invoice.customer.name %> effective on <%= @invoice.period_start %>.</span>
+    <% else %>
+      The hourly rate is looked up automatically from the customer's effective rate once you continue.
+    <% end %>
+  </p>
 </div>

@@ -1,4 +1,41 @@
-<div class="text-sm text-slate-500 dark:text-slate-400">
-  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-2">Step 2 — Review Entries</h2>
-  <p>Coming in B-20: review the un-billed billable time entries for the selected customer and period.</p>
+<div>
+  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-4">Step 2 — Review Entries</h2>
+
+  <% if @entries_result.nil? %>
+    <p class="text-sm text-slate-400">Pick a customer and date range in Step 1 first.</p>
+  <% else %>
+    <% if @entries_result.already_billed_count.positive? %>
+      <p class="text-sm text-amber-600 mb-4 p-3 rounded border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950">
+        Heads up: <%= pluralize(@entries_result.already_billed_count, 'entry') %> in this date range
+        already <%= @entries_result.already_billed_count == 1 ? 'appears' : 'appear' %> on a sent invoice — check for date range overlap.
+      </p>
+    <% end %>
+
+    <% if @entries_result.task_groups.any? %>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b dark:border-slate-700 text-left text-xs text-slate-500">
+            <th class="pb-2 font-medium">Task</th>
+            <th class="pb-2 font-medium text-right">Hours</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y dark:divide-slate-700">
+          <% @entries_result.task_groups.each do |group| %>
+            <tr>
+              <td class="py-2"><%= group.task.title %></td>
+              <td class="py-2 text-right tabular-nums"><%= group.hours %>h</td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr class="border-t dark:border-slate-600 font-semibold">
+            <td class="pt-3">Total</td>
+            <td class="pt-3 text-right tabular-nums"><%= @entries_result.total_hours %>h</td>
+          </tr>
+        </tfoot>
+      </table>
+    <% else %>
+      <p class="text-sm text-slate-400">No un-billed billable entries found for this customer and period.</p>
+    <% end %>
+  <% end %>
 </div>

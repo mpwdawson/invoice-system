@@ -10,7 +10,12 @@ module Invoices
     before_action :set_step,    only: [:show, :update]
 
     # GET /invoices/:invoice_id/wizard/:step
-    def show; end
+    def show
+      case @step
+      when 1 then @customers = Customer.order(:name)
+      when 2 then @entries_result = unbilled_entries_result
+      end
+    end
 
     # GET /invoices/new — resumes the most recent draft, or starts a new one
     def new
@@ -20,11 +25,24 @@ module Invoices
 
     # PATCH /invoices/:invoice_id/wizard/:step — advance to the given step
     def update
-      @invoice.update!(wizard_current_step: [@invoice.wizard_current_step.to_i, @step].max)
+      @invoice.assign_attributes(invoice_params)
+      @invoice.wizard_current_step = [@invoice.wizard_current_step.to_i, @step].max
+      @invoice.save!
       redirect_to invoice_wizard_step_path(@invoice, step: @step)
     end
 
     private
+
+    def invoice_params
+      params.fetch(:invoice, {}).permit(:customer_id, :period_start, :period_end)
+    end
+
+    def unbilled_entries_result
+      return unless @invoice.customer && @invoice.period_start && @invoice.period_end
+
+      Invoices::UnbilledEntriesQuery.call(customer: @invoice.customer, from: @invoice.period_start,
+                                          to: @invoice.period_end)
+    end
 
     def set_invoice
       @invoice = Invoice.find(params.expect(:invoice_id))

@@ -63,5 +63,24 @@ describe Invoices::WizardController do
         expect(invoice.reload.wizard_current_step).to eq(3)
       end
     end
+
+    context 'when submitting step 1 invoice fields' do
+      subject { patch invoice_wizard_step_path(invoice, step: 1), params: params }
+
+      let(:invoice)        { create(:invoice, wizard_current_step: 1) }
+      let(:other_customer) { create(:customer) }
+      let(:params) do
+        { invoice: { customer_id: other_customer.id, period_start: '2026-05-01', period_end: '2026-05-31' } }
+      end
+
+      it 'persists the customer and date range onto the invoice' do
+        subject
+
+        invoice.reload
+        expect(invoice.customer).to eq(other_customer)
+        expect(invoice.period_start).to eq(Date.new(2026, 5, 1))
+        expect(invoice.period_end).to eq(Date.new(2026, 5, 31))
+      end
+    end
   end
 end
