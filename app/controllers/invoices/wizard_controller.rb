@@ -14,6 +14,7 @@ module Invoices
       case @step
       when 1 then @customers = Customer.order(:name)
       when 2 then @entries_result = unbilled_entries_result
+      when 3 then set_lines_data
       end
     end
 
@@ -42,6 +43,10 @@ module Invoices
 
       Invoices::UnbilledEntriesQuery.call(customer: @invoice.customer, from: @invoice.period_start,
                                           to: @invoice.period_end)
+    end
+
+    def set_lines_data
+      @available_tasks = @invoice.customer.tasks.billable.ordered if @invoice.customer
     end
 
     def set_invoice

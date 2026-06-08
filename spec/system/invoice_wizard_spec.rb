@@ -40,4 +40,73 @@ describe 'Invoice Wizard' do
     expect(page).to have_text('Step 1 — Customer + Date Range')
     expect(page).to have_text('$95.00/hr')
   end
+
+  it 'crafts invoice lines and reaches the description step' do
+    invoice = create(:invoice, customer:, period_start: Date.new(2026, 5, 1),
+                               period_end: Date.new(2026, 5, 31), wizard_current_step: 3)
+
+    visit invoice_wizard_step_path(invoice, step: 3)
+
+    expect(page).to have_text('Step 3 — Craft Lines')
+
+    fill_in 'invoice_line_description', with: 'Dashboard polish and bug fixes'
+    check 'Rewards Dashboard'
+    click_on 'Add line'
+
+    expect(page).to have_text('Dashboard polish and bug fixes')
+    expect(page).to have_text('Rewards Dashboard')
+
+    line = find('[data-controller="disclosure"]', text: 'Dashboard polish and bug fixes')
+    within line do
+      click_on '✎'
+      fill_in 'invoice_line_description', with: 'Dashboard polish, bug fixes, and QA'
+      click_on 'Save'
+    end
+
+    expect(page).to have_text('Dashboard polish, bug fixes, and QA')
+
+    click_on 'Next'
+
+    expect(page).to have_text('Step 4 — Generate Descriptions')
+
+    click_on 'Generate descriptions'
+
+    expect(page).to have_text('LLM not configured — write descriptions manually for now.')
+  end
+
+  it 'cancels an inline edit without saving the change' do
+    invoice = create(:invoice, customer:, period_start: Date.new(2026, 5, 1),
+                               period_end: Date.new(2026, 5, 31), wizard_current_step: 3)
+    create(:invoice_line, invoice:, description: 'Original description')
+
+    visit invoice_wizard_step_path(invoice, step: 3)
+
+    line = find('[data-controller="disclosure"]', text: 'Original description')
+    within line do
+      click_on '✎'
+      fill_in 'invoice_line_description', with: 'Unsaved edit'
+      click_on 'Cancel'
+
+      expect(page).to have_button('✎')
+      expect(page).to have_no_button('Save')
+    end
+
+    expect(page).to have_text('Original description')
+  end
+
+  it 'deletes a line' do
+    invoice = create(:invoice, customer:, period_start: Date.new(2026, 5, 1),
+                               period_end: Date.new(2026, 5, 31), wizard_current_step: 3)
+    create(:invoice_line, invoice:, description: 'Line to remove')
+
+    visit invoice_wizard_step_path(invoice, step: 3)
+
+    expect(page).to have_text('Line to remove')
+
+    accept_confirm do
+      click_on '×'
+    end
+
+    expect(page).to have_no_text('Line to remove')
+  end
 end

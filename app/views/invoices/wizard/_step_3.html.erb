@@ -1,4 +1,13 @@
-<div class="text-sm text-slate-500 dark:text-slate-400">
-  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-2">Step 3 — Craft Lines</h2>
-  <p>Coming in B-21: add, edit, delete and reorder the client-facing description lines.</p>
+<div>
+  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-4">Step 3 — Craft Lines</h2>
+
+  <% if @available_tasks.nil? %>
+    <p class="text-sm text-slate-400">Pick a customer and date range in Step 1 first.</p>
+  <% else %>
+    <%# Lazy-loaded: its forms must parse in their own document, not the wizard's
+        wrapping @invoice form, or the browser flattens them into one form %>
+    <%= turbo_frame_tag 'invoice-lines', src: invoice_lines_path(@invoice), loading: :lazy do %>
+      <p class="text-sm text-slate-400">Loading…</p>
+    <% end %>
+  <% end %>
 </div>

@@ -1,4 +1,16 @@
-<div class="text-sm text-slate-500 dark:text-slate-400">
+<div data-controller="disclosure">
   <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-2">Step 4 — Generate Descriptions</h2>
-  <p>Coming in B-21: generate description suggestions from task context via the LLM (placeholder until B-25).</p>
+  <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+    Use the LLM to draft description text for each line from its linked tasks. You can review and edit every suggestion afterwards.
+  </p>
+
+  <button type="button" data-disclosure-target="trigger" data-action="disclosure#reveal"
+          class="px-3 py-1.5 text-sm rounded bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900">
+    Generate descriptions
+  </button>
+
+  <p data-disclosure-target="content" hidden
+     class="text-sm text-amber-600 mt-3 p-3 rounded border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950">
+    LLM not configured — write descriptions manually for now.
+  </p>
 </div>
