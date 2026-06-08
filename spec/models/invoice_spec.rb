@@ -53,6 +53,51 @@ describe Invoice do
     end
   end
 
+  describe 'rate auto-population' do
+    let(:customer) { create(:customer) }
+
+    it 'stamps the rate effective for the period start when saved' do
+      create(:customer_rate, customer:, rate: 95.00, effective_from: Date.new(2026, 1, 1))
+
+      invoice = create(:invoice, customer:, period_start: Date.new(2026, 5, 1))
+
+      expect(invoice.rate).to eq(95.00)
+    end
+
+    it 'leaves the rate blank when no CustomerRate is effective yet' do
+      invoice = create(:invoice, customer:, period_start: Date.new(2020, 1, 1))
+
+      expect(invoice.rate).to be_nil
+    end
+
+    it 'leaves the rate blank without a period_start' do
+      invoice = create(:invoice, customer:)
+
+      expect(invoice.rate).to be_nil
+    end
+
+    it 'recomputes the rate when the period start changes' do
+      create(:customer_rate, customer:, rate: 80.00, effective_from: Date.new(2026, 1, 1))
+      create(:customer_rate, customer:, rate: 100.00, effective_from: Date.new(2026, 6, 1))
+      invoice = create(:invoice, customer:, period_start: Date.new(2026, 3, 1))
+
+      invoice.update!(period_start: Date.new(2026, 7, 1))
+
+      expect(invoice.rate).to eq(100.00)
+    end
+
+    it 'recomputes the rate when the customer changes' do
+      create(:customer_rate, customer:, rate: 80.00, effective_from: Date.new(2026, 1, 1))
+      other_customer = create(:customer)
+      create(:customer_rate, customer: other_customer, rate: 120.00, effective_from: Date.new(2026, 1, 1))
+      invoice = create(:invoice, customer:, period_start: Date.new(2026, 3, 1))
+
+      invoice.update!(customer: other_customer)
+
+      expect(invoice.rate).to eq(120.00)
+    end
+  end
+
   describe 'status transitions' do
     it 'allows draft to ready' do
       invoice = create(:invoice, status: 'draft')
