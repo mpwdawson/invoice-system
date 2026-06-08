@@ -319,17 +319,21 @@ B-00 rails new (OS setup, Ruby, gems)
 
 **Key files:** `app/services/import/parse_log_service.rb`
 
-**⚠ Decide the date-derivation rule before writing the spec:** The input format uses row-position dates ("each line = one day, rows are sequential"). Confirm whether an explicit date header line is also supported, and what day-zero is. This must be resolved before the spec can be written.
+**Date derivation — resolved:** confirmed against a real June 2026 export — each row carries an explicit `Date` column (`M/D/YYYY`). No row-position inference or day-zero rule needed; the parser reads the date straight off column 1.
 
-**Input format:**
+**Input format:** tab-separated rows pasted directly from Excel — `Date<TAB>Time<TAB>Notes`:
 ```
-- AW-6522 DesignRequest Polymorphic Refactor (5), Meetings (1), Deploy prep (0.5)
-- AW-6770 & AW-6771 Disable & Remove Autodesign (1.5)
+6/1/2026	11	AI Meetings w/PK and Argen Bridge testing (2), AW-6662 Apply Tier Discounts on Sales Proposal & Product and ArenaMeta sync (6), QA Support (0.5), AW-6637 Rewards Dashboard Updates (1), AW-* Migrate Accounts Payable Page from React to Rails (2)
+6/2/2026	10	AI Meetings w/PK and Argen Bridge testing (4), AW-6662 Apply Tier Discounts on Sales Proposal (4), deploy prep & deploy (1), QA Support (1)
+6/3/2026	10	AW-6810 SF Disable Line Item Alert (0.5), AI & Meetings (4), ArgenBridge ECR/Prompt Testing (2), AW-6662 Apply Tier Discounts on Sales Proposal (2), AW-6812 Canada Education Page Support (1), AW-6605 Develop Loyalty Program Landing Page (0.5),
 ```
+- `Date` = `M/D/YYYY`, explicit per row
+- `Time` = the day's total hours — usable as a cross-check against the sum of parsed item hours
+- `Notes` = comma-separated `[ticket ref(s)] description (hours)` items; trailing commas/blank segments are common, as are wildcard refs (`AW-*`) and plain-text `&` that isn't a ticket-joiner (`AI & Meetings`, `deploy prep & deploy`) — the parser must distinguish `TICKET & TICKET` from incidental `&`
 
-**Specs:** `spec/services/import/parse_log_service_spec.rb` — single item, multiple comma-separated items, multi-ticket `&`, half-hours `(0.5)`, no hours, no ticket prefix, date derivation from row position. **Spec written before implementation.**
+**Specs:** `spec/services/import/parse_log_service_spec.rb` — single item, multiple comma-separated items, multi-ticket `&` vs. plain-text `&`, half-hours `(0.5)`, no hours, no ticket prefix, wildcard ticket ref (`AW-*`), trailing/blank segments, explicit date parsing (`M/D/YYYY`), hours-sum cross-check against the row's `Time` total. **Spec written before implementation.**
 
-**Done when:** Parser handles all variants. Date derivation rule tested.
+**Done when:** Parser handles all variants, including ambiguous `&` and wildcard refs, and correctly parses the explicit per-row date.
 
 ---
 

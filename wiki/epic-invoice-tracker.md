@@ -104,9 +104,9 @@ Auth + Profile   Customers         Tasks         Quick Entry     Monthly      Wi
 **Goal:** One-time import of recent work history from Excel/CSV format.
 
 **Acceptance criteria:**
-- Import screen accepts a CSV file or paste of raw text in the existing format:
-  `- AW-6522 DesignRequest Polymorphic Refactor (5), Meetings (1), Deploy prep (0.5)`
-- Parser extracts: date (from row position or explicit), task title, ticket refs, hours
+- Import screen accepts a paste of tab-separated rows copied straight from Excel — `Date<TAB>Time<TAB>Notes`, e.g.:
+  `6/1/2026	11	AI Meetings w/PK and Argen Bridge testing (2), AW-6662 Apply Tier Discounts on Sales Proposal (6), QA Support (0.5)`
+- Parser extracts: date (explicit, column 1 — `M/D/YYYY`), task title, ticket refs, hours per `Notes` item; the `Time` column (day total) is available as a cross-check against the sum of parsed item hours
 - Preview of parsed results before committing: shows each proposed TimeEntry with matched/new Task
 - User can correct mismatches before import (e.g. assign project code, fix a task name)
 - Duplicate detection: skips entries where a TimeEntry for `[task_id, date]` already exists
