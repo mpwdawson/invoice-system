@@ -1,21 +1,29 @@
 <div class="max-w-2xl">
   <%= render 'progress' %>
 
-  <%= form_with model: @invoice, url: invoice_wizard_step_path(@invoice, step: @step + 1), method: :patch do |form| %>
-    <%= render @step_partial, form: form %>
+  <% if @last_step %>
+    <%= render @step_partial %>
 
     <div class="flex justify-between mt-8 pt-4 border-t dark:border-slate-700">
-      <% unless @first_step %>
-        <%= link_to 'Back', invoice_wizard_step_path(@invoice, step: @step - 1),
-              class: 'px-3 py-1.5 text-sm rounded border dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' %>
-      <% else %>
-        <span></span>
-      <% end %>
+      <%= link_to 'Back', invoice_wizard_step_path(@invoice, step: @step - 1),
+            class: 'px-3 py-1.5 text-sm rounded border dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' %>
+      <span></span>
+    </div>
+  <% else %>
+    <%= form_with model: @invoice, url: invoice_wizard_step_path(@invoice, step: @step + 1), method: :patch do |form| %>
+      <%= render @step_partial, form: form %>
 
-      <% unless @last_step %>
+      <div class="flex justify-between mt-8 pt-4 border-t dark:border-slate-700">
+        <% unless @first_step %>
+          <%= link_to 'Back', invoice_wizard_step_path(@invoice, step: @step - 1),
+                class: 'px-3 py-1.5 text-sm rounded border dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' %>
+        <% else %>
+          <span></span>
+        <% end %>
+
         <%= form.submit 'Next',
               class: 'px-3 py-1.5 text-sm rounded bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900' %>
-      <% end %>
-    </div>
+      </div>
+    <% end %>
   <% end %>
 </div>
