@@ -1,4 +1,25 @@
-<div class="text-sm text-slate-500 dark:text-slate-400">
-  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-2">Step 6 — Finalize</h2>
-  <p>Coming in B-22: snapshot totals, stamp time entries with this invoice, and assign the invoice number.</p>
+<div>
+  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-4">Step 6 — Finalize</h2>
+
+  <% if @invoice.draft? %>
+    <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+      Finalizing snapshots the total hours and amount, stamps every included time entry with this invoice,
+      and marks the invoice ready to send. This cannot be undone from here.
+    </p>
+
+    <%= button_to 'Finalize Invoice', finalize_invoice_path(@invoice), method: :patch,
+          data: { turbo_confirm: 'Finalize this invoice? This stamps all included time entries and snapshots totals.' },
+          class: 'px-3 py-1.5 text-sm rounded bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900' %>
+  <% else %>
+    <p class="text-sm text-emerald-600 mb-4 p-3 rounded border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950">
+      Finalized — ready to send.
+    </p>
+
+    <div class="text-sm space-y-1">
+      <p>Invoice number: <span class="font-medium text-slate-900 dark:text-white"><%= @invoice.invoice_number %></span></p>
+      <p>Total hours: <span class="font-medium text-slate-900 dark:text-white tabular-nums"><%= @invoice.total_hours %>h</span></p>
+      <p>Total amount: <span class="font-medium text-slate-900 dark:text-white tabular-nums">$<%= number_with_precision(@invoice.total_amount, precision: 2) %></span></p>
+      <p>Status: <span class="font-medium text-slate-900 dark:text-white"><%= @invoice.status %></span></p>
+    </div>
+  <% end %>
 </div>

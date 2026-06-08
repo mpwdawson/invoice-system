@@ -6,7 +6,7 @@ module Invoices
     STEP_TITLES = ['Customer + Date Range', 'Review Entries', 'Craft Lines',
                    'Generate Descriptions', 'Preview', 'Finalize'].freeze
 
-    before_action :set_invoice, only: [:show, :update]
+    before_action :set_invoice, only: [:show, :update, :finalize]
     before_action :set_step,    only: [:show, :update]
 
     # GET /invoices/:invoice_id/wizard/:step
@@ -15,6 +15,17 @@ module Invoices
       when 1 then @customers = Customer.order(:name)
       when 2 then @entries_result = unbilled_entries_result
       when 3 then set_lines_data
+      when 5 then set_preview_data
+      end
+    end
+
+    # PATCH /invoices/:invoice_id/finalize
+    def finalize
+      result = Invoices::FinalizeService.call(invoice: @invoice)
+      if result.success?
+        redirect_to invoice_wizard_step_path(@invoice, step: 6), notice: 'Invoice finalized.'
+      else
+        redirect_to invoice_wizard_step_path(@invoice, step: 6), alert: result.errors.first
       end
     end
 
@@ -47,6 +58,14 @@ module Invoices
 
     def set_lines_data
       @available_tasks = @invoice.customer.tasks.billable.ordered if @invoice.customer
+    end
+
+    def set_preview_data
+      @entries_result = unbilled_entries_result
+      return unless @invoice.customer&.requires_project_codes?
+
+      @project_summary = Invoices::ProjectSummaryQuery.call(customer: @invoice.customer,
+                                                            from: @invoice.period_start, to: @invoice.period_end)
     end
 
     def set_invoice

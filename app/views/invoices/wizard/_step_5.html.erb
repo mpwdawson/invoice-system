@@ -1,4 +1,55 @@
-<div class="text-sm text-slate-500 dark:text-slate-400">
-  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-2">Step 5 — Preview</h2>
-  <p>Coming in B-22: preview the rendered invoice — description lines, project summary, totals and amount due.</p>
+<div>
+  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-4">Step 5 — Preview</h2>
+
+  <div class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+    <p><span class="font-medium text-slate-900 dark:text-white">Invoice <%= @invoice.invoice_number %></span> — <%= @invoice.customer&.name %></p>
+    <p><%= @invoice.period_start %> – <%= @invoice.period_end %></p>
+  </div>
+
+  <% if @invoice.invoice_lines.any? %>
+    <ul class="space-y-2 mb-6">
+      <% @invoice.invoice_lines.each do |line| %>
+        <li class="text-sm text-slate-700 dark:text-slate-300 border-b dark:border-slate-700 pb-2"><%= line.description %></li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="text-sm text-slate-400 mb-6">No description lines yet — add some in Step 3.</p>
+  <% end %>
+
+  <% if @project_summary %>
+    <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-2">Project Summary</h3>
+    <table class="w-full text-sm mb-6">
+      <thead>
+        <tr class="border-b dark:border-slate-700 text-left text-xs text-slate-500">
+          <th class="pb-2 font-medium">Project Code</th>
+          <th class="pb-2 font-medium">Description</th>
+          <th class="pb-2 font-medium text-right">Hours</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y dark:divide-slate-700">
+        <% @project_summary.rows.each do |row| %>
+          <tr>
+            <td class="py-2 font-mono text-xs"><%= row.project_code.code %></td>
+            <td class="py-2 text-slate-600 dark:text-slate-400"><%= row.project_code.description %></td>
+            <td class="py-2 text-right tabular-nums"><%= row.hours %>h</td>
+          </tr>
+        <% end %>
+        <% if @project_summary.unassigned_hours.positive? %>
+          <tr class="text-slate-400">
+            <td class="py-2 text-xs italic" colspan="2">unassigned (counted in total only)</td>
+            <td class="py-2 text-right tabular-nums"><%= @project_summary.unassigned_hours %>h</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% if @entries_result %>
+    <% total_hours = @entries_result.total_hours %>
+    <div class="text-sm border-t dark:border-slate-700 pt-4 space-y-1">
+      <p>Total hours: <span class="font-medium text-slate-900 dark:text-white tabular-nums"><%= total_hours %>h</span></p>
+      <p>Rate: <span class="font-medium text-slate-900 dark:text-white">$<%= number_with_precision(@invoice.rate, precision: 2) %>/hr</span></p>
+      <p>Amount due: <span class="font-medium text-slate-900 dark:text-white tabular-nums">$<%= number_with_precision(total_hours * @invoice.rate, precision: 2) %></span></p>
+    </div>
+  <% end %>
 </div>

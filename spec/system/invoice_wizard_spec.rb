@@ -109,4 +109,37 @@ describe 'Invoice Wizard' do
 
     expect(page).to have_no_text('Line to remove')
   end
+
+  it 'previews the invoice and finalizes it' do
+    invoice = create(:invoice, customer:, period_start: Date.new(2026, 5, 1),
+                               period_end: Date.new(2026, 5, 31), wizard_current_step: 5)
+    create(:invoice_line, invoice:, description: 'Dashboard polish and bug fixes')
+
+    visit invoice_wizard_step_path(invoice, step: 5)
+
+    expect(page).to have_text('Step 5 — Preview')
+    expect(page).to have_text(invoice.invoice_number)
+    expect(page).to have_text('Dashboard polish and bug fixes')
+    expect(page).to have_text('4.0h')
+    expect(page).to have_text('$95.00/hr')
+    expect(page).to have_text('$380.00')
+
+    click_on 'Next'
+
+    expect(page).to have_text('Step 6 — Finalize')
+
+    accept_confirm do
+      click_on 'Finalize Invoice'
+    end
+
+    expect(page).to have_text('Finalized — ready to send')
+
+    reloaded = invoice.reload
+    expect(reloaded.status).to eq('ready')
+    expect(reloaded.total_hours).to eq(4.0)
+    expect(reloaded.total_amount).to eq(380.00)
+
+    entry = TimeEntry.find_by!(task:, date: Date.new(2026, 5, 12))
+    expect(entry.invoice_id).to eq(invoice.id)
+  end
 end

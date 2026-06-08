@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   get   'invoices/new',                      to: 'invoices/wizard#new',  as: :new_invoice
   get   'invoices/:invoice_id/wizard/:step', to: 'invoices/wizard#show', as: :invoice_wizard_step
   patch 'invoices/:invoice_id/wizard/:step', to: 'invoices/wizard#update'
+  patch 'invoices/:invoice_id/finalize',     to: 'invoices/wizard#finalize', as: :finalize_invoice
 
   resources :invoices, only: [] do
     resources :lines, only: [:index, :create, :update, :destroy], controller: 'invoices/lines' do
