@@ -112,6 +112,34 @@ describe TasksController do
     end
   end
 
+  describe 'GET #search' do
+    subject { get search_tasks_path, params: params }
+
+    let!(:customer_task)  { create(:task, customer: customer, title: 'Alpha Work Item') }
+    let!(:other_customer) { create(:customer) }
+    let!(:other_task)     { create(:task, customer: other_customer, title: 'Beta Work Item') }
+
+    context 'without a customer_id' do
+      let(:params) { { query: 'Work' } }
+
+      it 'returns tasks from all customers' do
+        subject
+        expect(response.body).to include('Alpha Work Item')
+        expect(response.body).to include('Beta Work Item')
+      end
+    end
+
+    context 'with a customer_id' do
+      let(:params) { { query: 'Work', customer_id: customer.id } }
+
+      it 'returns only tasks for that customer' do
+        subject
+        expect(response.body).to include('Alpha Work Item')
+        expect(response.body).not_to include('Beta Work Item')
+      end
+    end
+  end
+
   describe 'GET #inline_new' do
     subject { get inline_new_tasks_path, params: params }
 
@@ -126,6 +154,15 @@ describe TasksController do
       it 'pre-fills the title in the response' do
         subject
         expect(response.body).to include('New Feature Work')
+      end
+    end
+
+    context 'with a customer_id param' do
+      let!(:params) { { title: 'New Feature Work', customer_id: customer.id } }
+
+      it 'pre-selects the customer in the form' do
+        subject
+        expect(response.body).to include("selected=\"selected\" value=\"#{customer.id}\"")
       end
     end
   end

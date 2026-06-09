@@ -8,7 +8,7 @@
   <% elsif @query.present? %>
     <ul class="border rounded shadow-lg bg-white dark:bg-slate-800 dark:border-slate-600">
       <li>
-        <%= link_to inline_new_tasks_path(title: @query),
+        <%= link_to inline_new_tasks_path(title: @query, customer_id: @customer_id),
             class: "block px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer" do %>
           <span class="text-slate-400 text-xs">No tasks found.</span>
           <span class="font-medium ml-2">Create "<%= @query %>"</span>

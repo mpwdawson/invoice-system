@@ -7,6 +7,8 @@ export default class extends Controller {
     "autoSelectSlot"
   ]
 
+  static values = { customerId: String }
+
   searchTask() {
     clearTimeout(this.#searchTimeout)
     this.#searchTimeout = setTimeout(() => {
@@ -16,7 +18,9 @@ export default class extends Controller {
         this.dropdownFrameTarget.innerHTML = ""
         return
       }
-      this.dropdownFrameTarget.src = `/tasks/search?query=${encodeURIComponent(q)}`
+      const params = new URLSearchParams({ query: q })
+      if (this.customerIdValue) params.set("customer_id", this.customerIdValue)
+      this.dropdownFrameTarget.src = `/tasks/search?${params}`
     }, 150)
   }
 

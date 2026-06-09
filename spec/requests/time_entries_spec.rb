@@ -15,6 +15,44 @@ describe TimeEntriesController do
       subject
       expect(response).to have_http_status(:ok)
     end
+
+    context 'with a customer_id param' do
+      let!(:other_customer) { create(:customer) }
+      let!(:other_task)     { create(:task, customer: other_customer) }
+      let!(:customer_entry) { create(:time_entry, task:, date: Date.current, hours: 1) }
+      let!(:other_entry)    { create(:time_entry, task: other_task, date: Date.current, hours: 2) }
+
+      it 'saves customer_id to the session' do
+        get log_time_path, params: { customer_id: customer.id.to_s }
+        expect(session[:log_customer_id]).to eq(customer.id.to_s)
+      end
+
+      it 'shows only that customer\'s entries in the log' do
+        get log_time_path, params: { customer_id: customer.id }
+        expect(response.body).to include(task.title)
+        expect(response.body).not_to include(other_task.title)
+      end
+    end
+
+    context 'with customer_id blank (All)' do
+      it 'clears the session filter' do
+        get log_time_path, params: { customer_id: customer.id.to_s }
+        get log_time_path, params: { customer_id: '' }
+        expect(session[:log_customer_id]).to be_nil
+      end
+    end
+
+    context 'with no customer_id param but session filter set' do
+      let!(:other_customer) { create(:customer) }
+      let!(:other_task)     { create(:task, customer: other_customer) }
+      let!(:other_entry)    { create(:time_entry, task: other_task, date: Date.current, hours: 2) }
+
+      it 'uses the session filter' do
+        get log_time_path, params: { customer_id: customer.id } # saves to session
+        get log_time_path # no param — reads session
+        expect(response.body).not_to include(other_task.title)
+      end
+    end
   end
 
   describe 'GET #preview' do

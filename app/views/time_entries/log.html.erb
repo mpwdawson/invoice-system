@@ -1,12 +1,22 @@
-<div class="flex items-center justify-between mb-6">
+<div class="flex items-center justify-between mb-4">
   <h1 class="text-xl font-semibold">Log Time</h1>
+</div>
+
+<div class="flex items-center gap-2 mb-6 flex-wrap">
+  <%= link_to 'All', log_time_path(customer_id: ''),
+      class: "px-3 py-1 text-xs rounded-full #{@customer_id.blank? ? 'bg-slate-800 text-white dark:bg-slate-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}" %>
+  <% @customers.each do |customer| %>
+    <%= link_to customer.name, log_time_path(customer_id: customer.id),
+        class: "px-3 py-1 text-xs rounded-full #{@customer_id.to_i == customer.id ? 'bg-slate-800 text-white dark:bg-slate-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}" %>
+  <% end %>
 </div>
 
 <% if @error %>
   <p class="mb-4 text-sm text-red-600"><%= @error %></p>
 <% end %>
 
-<div data-controller="time-entry-form">
+<div data-controller="time-entry-form"
+     data-time-entry-form-customer-id-value="<%= @customer_id.to_s %>">
   <div id="time-entry-form-wrapper" class="max-w-lg">
     <%= render 'form', date: @date %>
   </div>

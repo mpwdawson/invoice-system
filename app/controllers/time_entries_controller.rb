@@ -10,43 +10,52 @@ class TimeEntriesController < ApplicationController
   end
 
   def create
-    @time_entry = TimeEntry.log(
+    @customer_id = session[:log_customer_id]
+    @customers   = Customer.order(:name)
+    @time_entry  = TimeEntry.log(
       task: Task.find(params.dig(:time_entry, :task_id)),
       date: params.dig(:time_entry, :date),
       hours: params.dig(:time_entry, :hours).to_d
     )
     @date        = params.dig(:time_entry, :date)
-    @log_entries = TimeEntries::RecentLogQuery.call(days: 14)
+    @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id)
   rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid => e
     @error       = e.try(:record)&.errors&.full_messages&.first || e.message
     @date        = params.dig(:time_entry, :date)
-    @log_entries = TimeEntries::RecentLogQuery.call(days: 14)
+    @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id)
     render :log, formats: [:html], status: :unprocessable_content
   end
 
   def update
-    @time_entry = TimeEntry.find(params.expect(:id))
+    @customer_id = session[:log_customer_id]
+    @time_entry  = TimeEntry.find(params.expect(:id))
     if @time_entry.update(time_entry_params)
-      @log_entries = TimeEntries::RecentLogQuery.call(days: 14)
+      @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id)
     else
       render :edit, formats: [:html], status: :unprocessable_content
     end
   end
 
   def destroy
-    @time_entry = TimeEntry.find(params.expect(:id))
+    @customer_id = session[:log_customer_id]
+    @time_entry  = TimeEntry.find(params.expect(:id))
     if @time_entry.invoice_id? && params[:force].blank?
       @soft_lock = true
     else
       @time_entry.destroy!
-      @log_entries = TimeEntries::RecentLogQuery.call(days: 14)
+      @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id)
     end
   end
 
   # GET /log — primary daily entry screen
   def log
+    if params.key?(:customer_id)
+      session[:log_customer_id] = params[:customer_id].presence
+    end
+    @customer_id = session[:log_customer_id]
+    @customers   = Customer.order(:name)
     @date        = params[:date].presence || Date.current.to_s
-    @log_entries = TimeEntries::RecentLogQuery.call(days: 14)
+    @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id)
   end
 
   # GET /time_entries/preview — Turbo Frame running-total panel, updated on field change

@@ -40,4 +40,30 @@ describe 'Log Time' do
       expect(find("input[name='time_entry[date]']").value).to eq(5.days.ago.to_date.to_s)
     end
   end
+
+  describe 'customer filter pills' do
+    let!(:customer_a) { create(:customer, name: 'Acme Corp') }
+    let!(:customer_b) { create(:customer, name: 'Globex Inc') }
+    let!(:task_a)     { create(:task, customer: customer_a, title: 'Acme Task') }
+    let!(:task_b)     { create(:task, customer: customer_b, title: 'Globex Task') }
+    let!(:entry_a)    { create(:time_entry, task: task_a, date: Date.current, hours: 1) }
+    let!(:entry_b)    { create(:time_entry, task: task_b, date: Date.current, hours: 2) }
+
+    it 'shows all entries by default, filters to one customer, then shows all again on All' do
+      visit root_path
+
+      expect(page).to have_text('Acme Task')
+      expect(page).to have_text('Globex Task')
+
+      click_link 'Acme Corp'
+
+      expect(page).to have_text('Acme Task')
+      expect(page).to have_no_text('Globex Task')
+
+      click_link 'All'
+
+      expect(page).to have_text('Acme Task')
+      expect(page).to have_text('Globex Task')
+    end
+  end
 end
