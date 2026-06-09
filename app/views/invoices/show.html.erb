@@ -21,10 +21,10 @@
   <p>Rate: <span class="font-medium text-slate-900 dark:text-white">$<%= number_with_precision(@invoice.rate, precision: 2) %>/hr</span></p>
   <p>Total amount: <span class="font-medium text-slate-900 dark:text-white tabular-nums">$<%= number_with_precision(@invoice.total_amount, precision: 2) %></span></p>
   <% if @invoice.sent_at.present? %>
-    <p>Sent: <span class="font-medium text-slate-900 dark:text-white"><%= @invoice.sent_at.strftime("%-d %b %Y") %></span></p>
+    <p>Sent: <span class="font-medium text-slate-900 dark:text-white"><%= @invoice.sent_at.in_time_zone(current_timezone).strftime("%-d %b %Y") %></span></p>
   <% end %>
   <% if @invoice.paid_at.present? %>
-    <p>Paid: <span class="font-medium text-slate-900 dark:text-white"><%= @invoice.paid_at.strftime("%-d %b %Y") %></span></p>
+    <p>Paid: <span class="font-medium text-slate-900 dark:text-white"><%= @invoice.paid_at.in_time_zone(current_timezone).strftime("%-d %b %Y") %></span></p>
   <% end %>
 </div>
 

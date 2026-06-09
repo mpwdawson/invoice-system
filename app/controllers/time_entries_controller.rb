@@ -18,11 +18,11 @@ class TimeEntriesController < ApplicationController
       hours: params.dig(:time_entry, :hours).to_d
     )
     @date        = params.dig(:time_entry, :date)
-    @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id)
+    @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
   rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid => e
     @error       = e.try(:record)&.errors&.full_messages&.first || e.message
     @date        = params.dig(:time_entry, :date)
-    @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id)
+    @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
     render :log, formats: [:html], status: :unprocessable_content
   end
 
@@ -30,7 +30,7 @@ class TimeEntriesController < ApplicationController
     @customer_id = session[:log_customer_id]
     @time_entry  = TimeEntry.find(params.expect(:id))
     if @time_entry.update(time_entry_params)
-      @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id)
+      @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
     else
       render :edit, formats: [:html], status: :unprocessable_content
     end
@@ -43,7 +43,7 @@ class TimeEntriesController < ApplicationController
       @soft_lock = true
     else
       @time_entry.destroy!
-      @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id)
+      @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
     end
   end
 
@@ -54,20 +54,20 @@ class TimeEntriesController < ApplicationController
     end
     @customer_id = session[:log_customer_id]
     @customers   = Customer.order(:name)
-    @date        = params[:date].presence || Date.current.to_s
-    @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id)
+    @date        = params[:date].presence || user_date.to_s
+    @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
   end
 
   # GET /time_entries/preview — Turbo Frame running-total panel, updated on field change
   def preview
-    p = params.permit(:task_id, :date, :hours)
-    @task = Task.includes(:customer, :project_code).find_by(id: p[:task_id])
+    permitted = params.permit(:task_id, :date, :hours)
+    @task = Task.includes(:customer, :project_code).find_by(id: permitted[:task_id])
     @date = begin
-      Date.parse(p[:date].to_s)
+      Date.parse(permitted[:date].to_s)
     rescue ArgumentError
-      Date.current
+      user_date
     end
-    @hours          = p[:hours].to_d
+    @hours          = permitted[:hours].to_d
     @existing       = @task && TimeEntry.find_by(task: @task, date: @date)
     @existing_hours = @existing&.hours.to_d
     @total          = @existing_hours + @hours

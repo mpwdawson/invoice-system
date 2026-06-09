@@ -4,17 +4,18 @@ module TimeEntries
   class RecentLogQuery
     Group = Struct.new(:date, :items, :total_hours, keyword_init: true)
 
-    def self.call(days:, customer_id: nil)
-      new(days:, customer_id:).call
+    def self.call(days:, customer_id: nil, today: Date.current)
+      new(days:, customer_id:, today:).call
     end
 
-    def initialize(days:, customer_id: nil)
+    def initialize(days:, customer_id: nil, today: Date.current)
       @days        = days
       @customer_id = customer_id
+      @today       = today
     end
 
     def call
-      range = (Date.current - (@days - 1))..Date.current
+      range = (@today - (@days - 1))..@today
       scope = TimeEntry
         .includes(task: [:customer, :project_code])
         .where(date: range)
@@ -30,6 +31,6 @@ module TimeEntries
 
     private
 
-    attr_reader :days, :customer_id
+    attr_reader :days, :customer_id, :today
   end
 end

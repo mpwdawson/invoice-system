@@ -42,8 +42,8 @@ class ReportsController < ApplicationController
   def set_filters
     @customers = Customer.order(:name)
     @customer  = Customer.find_by(id: params[:customer_id])
-    @from      = parse_date(params[:from]) || Date.current.beginning_of_month
-    @to        = parse_date(params[:to])   || Date.current.end_of_month
+    @from      = parse_date(params[:from]) || user_date.beginning_of_month
+    @to        = parse_date(params[:to])   || user_date.end_of_month
   end
 
   def parse_date(val)

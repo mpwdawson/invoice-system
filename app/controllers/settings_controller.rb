@@ -17,6 +17,6 @@ class SettingsController < ApplicationController
   private
 
   def profile_params
-    params.expect(contractor_profile: [:name, :address, :email, :tax_number, :bank_details])
+    params.expect(contractor_profile: [:name, :address, :email, :tax_number, :bank_details, :timezone])
   end
 end

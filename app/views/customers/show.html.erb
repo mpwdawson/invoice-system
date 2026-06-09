@@ -77,7 +77,7 @@
           <div>
             <%= f.label :effective_from, "Effective From", class: "block text-xs font-medium mb-1" %>
             <p class="text-xs text-slate-400 mb-1">Date this rate applies from</p>
-            <%= f.date_field :effective_from, value: Date.today,
+            <%= f.date_field :effective_from, value: user_date,
                 autocomplete: "off",
                 class: "border rounded px-3 py-2 text-sm" %>
           </div>

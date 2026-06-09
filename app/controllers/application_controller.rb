@@ -9,9 +9,19 @@ class ApplicationController < ActionController::Base
 
   before_action :require_login
 
+  helper_method :current_timezone, :user_date
+
   private
 
   def require_login
     redirect_to login_path unless session[:authenticated]
+  end
+
+  def current_timezone
+    @current_timezone ||= ContractorProfile.first&.timezone.presence || 'UTC'
+  end
+
+  def user_date
+    @user_date ||= Time.use_zone(current_timezone) { Date.current }
   end
 end

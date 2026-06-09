@@ -31,6 +31,13 @@
       <%= f.label :bank_details, "Bank Details", class: "block text-sm font-medium mb-1" %>
       <%= f.text_area :bank_details, rows: 3, class: "w-full border rounded px-3 py-2 text-sm" %>
     </div>
+    <div>
+      <%= f.label :timezone, "Timezone", class: "block text-sm font-medium mb-1" %>
+      <%= f.time_zone_select :timezone,
+          ActiveSupport::TimeZone.us_zones,
+          { include_blank: false },
+          class: "w-full border rounded px-3 py-2 text-sm" %>
+    </div>
     <%= f.submit "Save", class: "mt-2 px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700" %>
   </div>
 <% end %>
