@@ -1,4 +1,4 @@
-<div class="flex items-center gap-3 px-3 py-2 text-sm">
+<div class="flex items-center gap-3 px-3 py-2 text-sm hover:bg-slate-200 dark:hover:bg-slate-600 <%= local_assigns[:row_index]&.even? ? 'bg-slate-100 dark:bg-slate-700' : '' %>">
   <span class="flex-1 font-medium truncate"><%= entry.task.title %></span>
   <% if entry.task.project_code %>
     <span class="font-mono text-xs text-slate-400"><%= entry.task.project_code.code %></span>
@@ -6,7 +6,7 @@
   <% if entry.invoice_id? %>
     <span class="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">billed</span>
   <% else %>
-    <span class="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400">unbilled</span>
+    <span class="text-xs px-1.5 py-0.5 rounded bg-slate-200 text-slate-500 dark:bg-slate-600 dark:text-slate-300">unbilled</span>
   <% end %>
   <span class="tabular-nums text-slate-600 dark:text-slate-300"><%= entry.hours %>h</span>
   <%= link_to '✎', edit_time_entry_path(entry),

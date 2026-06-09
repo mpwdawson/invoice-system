@@ -19,9 +19,9 @@
 
     <% if group.items.any? %>
       <div class="divide-y dark:divide-slate-700 border rounded dark:border-slate-700">
-        <% group.items.each do |entry| %>
+        <% group.items.each_with_index do |entry, idx| %>
           <%= turbo_frame_tag dom_id(entry) do %>
-            <%= render 'entry_row', entry: entry %>
+            <%= render 'entry_row', entry: entry, row_index: idx %>
           <% end %>
         <% end %>
       </div>
