@@ -5,6 +5,16 @@ class TimeEntriesController < ApplicationController
     @time_entry = TimeEntry.find(params.expect(:id))
   end
 
+  # PATCH /time_entries/:id/update_inline
+  def update_inline
+    @time_entry = TimeEntry.find(params.expect(:id))
+    if @time_entry.update(inline_time_entry_params)
+      head :ok
+    else
+      head :unprocessable_content
+    end
+  end
+
   def edit
     @time_entry = TimeEntry.find(params.expect(:id))
   end
@@ -76,6 +86,10 @@ class TimeEntriesController < ApplicationController
   private
 
   def time_entry_params
+    params.expect(time_entry: %i[hours date])
+  end
+
+  def inline_time_entry_params
     params.expect(time_entry: %i[hours date])
   end
 end

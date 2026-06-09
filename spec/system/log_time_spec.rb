@@ -9,14 +9,15 @@ describe 'Log Time' do
     let!(:task)  { create(:task) }
     let!(:entry) { create(:time_entry, task:, date: Date.current, hours: 1.0) }
 
-    it 'updates hours in place' do
+    it 'shows no Save button and closes back to the row on Close' do
       visit root_path
       find("a[href='#{edit_time_entry_path(entry)}']").click
       within("turbo-frame#time_entry_#{entry.id}") do
-        fill_in 'time_entry[hours]', with: '2.5'
-        click_on 'Save'
+        expect(page).to have_no_button('Save')
+        expect(page).to have_css("input[name='time_entry[hours]']")
+        click_link 'Close'
       end
-      expect(page).to have_text('2.5h')
+      # Frame navigates back to row view — no edit inputs inside it
       expect(page).to have_no_css("turbo-frame#time_entry_#{entry.id} input[name='time_entry[hours]']")
     end
   end

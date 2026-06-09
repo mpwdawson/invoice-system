@@ -194,6 +194,32 @@ describe TimeEntriesController do
     end
   end
 
+  describe 'PATCH #update_inline' do
+    subject { patch update_inline_time_entry_path(entry), params: params, as: :json }
+
+    let(:entry) { create(:time_entry, task:, hours: 1.0, date: Date.current) }
+
+    context 'with valid params' do
+      let(:params) { { time_entry: { hours: '3.0', date: Date.current.to_s } } }
+
+      it 'updates the entry and returns 200' do
+        subject
+        expect(response).to have_http_status(:ok)
+        expect(entry.reload.hours).to eq(3.0)
+      end
+    end
+
+    context 'with invalid hours (zero)' do
+      let(:params) { { time_entry: { hours: '0', date: Date.current.to_s } } }
+
+      it 'does not update and returns 422' do
+        subject
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(entry.reload.hours).to eq(1.0)
+      end
+    end
+  end
+
   describe 'DELETE #destroy' do
     context 'for an unbilled entry' do
       subject { delete time_entry_path(entry), headers: { 'Accept' => 'text/vnd.turbo-stream.html' } }
