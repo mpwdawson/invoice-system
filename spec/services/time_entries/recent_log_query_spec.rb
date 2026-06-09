@@ -40,4 +40,23 @@ describe TimeEntries::RecentLogQuery do
       expect(subject.flat_map(&:items)).not_to include(old)
     end
   end
+
+  context 'when customer_id is given' do
+    subject { described_class.call(days: 14, customer_id: customer_a.id) }
+
+    let!(:customer_a) { create(:customer) }
+    let!(:customer_b) { create(:customer) }
+    let!(:task_a)     { create(:task, customer: customer_a) }
+    let!(:task_b)     { create(:task, customer: customer_b) }
+    let!(:entry_a)    { create(:time_entry, task: task_a, date: Date.current, hours: 1) }
+    let!(:entry_b)    { create(:time_entry, task: task_b, date: Date.current, hours: 2) }
+
+    it 'returns only entries belonging to the given customer' do
+      expect(subject.flat_map(&:items)).to include(entry_a)
+    end
+
+    it 'excludes entries from other customers' do
+      expect(subject.flat_map(&:items)).not_to include(entry_b)
+    end
+  end
 end
