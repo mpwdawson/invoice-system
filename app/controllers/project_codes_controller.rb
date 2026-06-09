@@ -2,10 +2,14 @@
 
 class ProjectCodesController < ApplicationController
   before_action :set_customer
-  before_action :set_project_code, only: [:edit, :update, :archive, :destroy]
+  before_action :set_project_code, only: [:show, :edit, :update, :archive, :destroy]
 
   def index
     @project_codes = @customer.project_codes.includes(:tasks).ordered
+  end
+
+  def show
+    @tasks = @project_code.tasks.includes(:time_entries, :ticket_references).ordered
   end
 
   def new
