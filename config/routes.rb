@@ -43,7 +43,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :tasks, only: [:index, :show, :new, :create, :edit, :update] do
+  resources :tasks, only: [:index, :show, :new, :create, :edit, :update, :destroy] do
     collection do
       get  :search
       get  :inline_new

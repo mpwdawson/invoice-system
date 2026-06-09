@@ -5,7 +5,7 @@ class Task < ApplicationRecord
   belongs_to :project_code, optional: true
 
   has_many :ticket_references, dependent: :destroy
-  has_many :time_entries,      dependent: :destroy
+  has_many :time_entries,      dependent: :restrict_with_error
 
   enum :status, { active: 'active', archived: 'archived' }, default: 'active'
 

@@ -223,6 +223,28 @@ describe TasksController do
     end
   end
 
+  describe 'DELETE #destroy' do
+    subject { delete task_path(task) }
+
+    context 'with no time entries' do
+      before { task }
+
+      it 'destroys the task and redirects to index' do
+        expect { subject }.to change(Task, :count).by(-1)
+        expect(response).to redirect_to(tasks_path)
+      end
+    end
+
+    context 'with time entries' do
+      let!(:entry) { create(:time_entry, task:) }
+
+      it 'does not destroy the task and redirects to edit with alert' do
+        expect { subject }.not_to change(Task, :count)
+        expect(response).to redirect_to(edit_task_path(task))
+      end
+    end
+  end
+
   describe 'PATCH #archive' do
     it 'archives an active task and redirects to index' do
       patch archive_task_path(task)

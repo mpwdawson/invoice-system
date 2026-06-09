@@ -73,6 +73,22 @@ describe Task do
     end
   end
 
+  describe 'destroy restriction' do
+    let(:customer) { create(:customer) }
+    let(:task)     { create(:task, customer: customer) }
+
+    it 'destroys a task with no time entries' do
+      task
+      expect { task.destroy }.to change(Task, :count).by(-1)
+    end
+
+    it 'does not destroy a task that has time entries' do
+      create(:time_entry, task: task)
+      expect { task.destroy }.not_to change(Task, :count)
+      expect(task.errors[:base]).to be_present
+    end
+  end
+
   describe 'project_code customer validation' do
     let(:customer)       { create(:customer) }
     let(:other_customer) { create(:customer) }

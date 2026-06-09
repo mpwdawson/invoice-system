@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TasksController < ApplicationController
-  before_action :set_task, only: [:show, :edit, :update, :archive, :update_inline]
+  before_action :set_task, only: [:show, :edit, :update, :destroy, :archive, :update_inline]
 
   def index
     @tasks = Tasks::SearchQuery.call(
@@ -71,6 +71,14 @@ class TasksController < ApplicationController
       head :ok
     else
       head :unprocessable_content
+    end
+  end
+
+  def destroy
+    if @task.destroy
+      redirect_to tasks_path, notice: 'Task deleted.'
+    else
+      redirect_to edit_task_path(@task), alert: @task.errors.full_messages.to_sentence
     end
   end
 

@@ -2,3 +2,11 @@
 <h1 class="text-xl font-semibold mb-6">Edit Task</h1>
 
 <%= render "form" %>
+
+<div class="mt-8 max-w-lg border-t pt-4 dark:border-slate-700">
+  <% unless @task.time_entries.any? %>
+    <%= button_to "Delete task", task_path(@task), method: :delete,
+        form: { data: { turbo_confirm: "Delete this task?" } },
+        class: "text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 bg-transparent border-0 p-0 cursor-pointer" %>
+  <% end %>
+</div>
