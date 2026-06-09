@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_07_195513) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_175802) do
   create_table "contractor_profiles", force: :cascade do |t|
     t.text "address"
     t.text "bank_details"
@@ -18,6 +18,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_195513) do
     t.string "email"
     t.string "name"
     t.string "tax_number"
+    t.string "timezone", default: "UTC", null: false
     t.datetime "updated_at", null: false
   end
 
