@@ -198,6 +198,31 @@ describe TasksController do
     end
   end
 
+  describe 'PATCH #update_inline' do
+    subject { patch update_inline_task_path(task), params: params, as: :json }
+
+    context 'with a valid title' do
+      let(:params) { { task: { title: 'Renamed title' } } }
+
+      it 'updates the task title and returns 200' do
+        subject
+        expect(response).to have_http_status(:ok)
+        expect(task.reload.title).to eq('Renamed title')
+      end
+    end
+
+    context 'with a blank title' do
+      let(:params) { { task: { title: '' } } }
+
+      it 'does not update the task and returns 422' do
+        original_title = task.title
+        subject
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(task.reload.title).to eq(original_title)
+      end
+    end
+  end
+
   describe 'PATCH #archive' do
     it 'archives an active task and redirects to index' do
       patch archive_task_path(task)

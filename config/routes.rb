@@ -48,7 +48,10 @@ Rails.application.routes.draw do
       get  :inline_new
       post :inline_create
     end
-    member { patch :archive }
+    member do
+      patch :archive
+      patch :update_inline
+    end
     resources :ticket_references, only: [:create, :destroy]
   end
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TasksController < ApplicationController
-  before_action :set_task, only: [:show, :edit, :update, :archive]
+  before_action :set_task, only: [:show, :edit, :update, :archive, :update_inline]
 
   def index
     @tasks = Tasks::SearchQuery.call(
@@ -65,6 +65,15 @@ class TasksController < ApplicationController
     render :inline_new, formats: [:html], status: :unprocessable_content
   end
 
+  # PATCH /tasks/:id/update_inline
+  def update_inline
+    if @task.update(update_inline_task_params)
+      head :ok
+    else
+      head :unprocessable_content
+    end
+  end
+
   # PATCH /tasks/:id/archive
   def archive
     @task.active? ? @task.archived! : @task.active!
@@ -91,6 +100,10 @@ class TasksController < ApplicationController
   def task_params
     params.expect(task: [:customer_id, :project_code_id, :title,
                          :invoice_name, :notes, :billable])
+  end
+
+  def update_inline_task_params
+    params.expect(task: [:title])
   end
 
   def inline_task_params

@@ -52,18 +52,18 @@ describe 'Log Time' do
     it 'shows all entries by default, filters to one customer, then shows all again on All' do
       visit root_path
 
-      expect(page).to have_text('Acme Task')
-      expect(page).to have_text('Globex Task')
+      expect(page).to have_selector("input[value='Acme Task']")
+      expect(page).to have_selector("input[value='Globex Task']")
 
       click_link 'Acme Corp'
 
-      expect(page).to have_text('Acme Task')
-      expect(page).to have_no_text('Globex Task')
+      expect(page).to have_selector("input[value='Acme Task']")
+      expect(page).to have_no_selector("input[value='Globex Task']")
 
       click_link 'All'
 
-      expect(page).to have_text('Acme Task')
-      expect(page).to have_text('Globex Task')
+      expect(page).to have_selector("input[value='Acme Task']")
+      expect(page).to have_selector("input[value='Globex Task']")
     end
   end
 end
