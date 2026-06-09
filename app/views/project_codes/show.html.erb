@@ -35,13 +35,13 @@
     </thead>
     <tbody>
       <% @tasks.each do |task| %>
-        <tr class="border-b hover:bg-slate-50 dark:hover:bg-slate-800 <%= "opacity-50" if task.archived? %>">
-          <td class="py-1.5">
+        <tr class="border-b even:bg-slate-100 dark:even:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 <%= "opacity-50" if task.archived? %>">
+          <td class="py-1">
             <%= link_to task.title, task_path(task), class: "hover:underline" %>
           </td>
-          <td class="py-1.5 text-slate-500 capitalize"><%= task.status %></td>
-          <td class="py-1.5 text-slate-500"><%= task.billable? ? "Yes" : "No" %></td>
-          <td class="py-1.5 text-right font-mono text-xs">
+          <td class="py-1 text-slate-500 capitalize"><%= task.status %></td>
+          <td class="py-1 text-slate-500"><%= task.billable? ? "Yes" : "No" %></td>
+          <td class="py-1 text-right font-mono text-xs">
             <% total = task.time_entries.sum(&:hours) %>
             <%= total.positive? ? "#{total}h" : "—" %>
           </td>
