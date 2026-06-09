@@ -107,6 +107,73 @@ describe ProjectCodesController do
     end
   end
 
+  describe 'GET #import_form' do
+    subject { get import_form_customer_project_codes_path(customer) }
+
+    it 'returns 200' do
+      subject
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'renders the import turbo frame' do
+      subject
+      expect(response.body).to include('project-code-import')
+    end
+  end
+
+  describe 'POST #import' do
+    subject { post import_customer_project_codes_path(customer), params: params }
+
+    context 'with valid CSV containing new codes' do
+      let(:params) { { csv_text: "Project Code,Description\nFRICTION,Territory Assignment\nAIFIRST,AI Initiative" } }
+
+      it 'creates the project codes' do
+        expect { subject }.to change(ProjectCode, :count).by(2)
+      end
+
+      it 'redirects to the index with a created notice' do
+        subject
+        expect(response).to redirect_to(customer_project_codes_path(customer))
+        expect(flash[:notice]).to include('created')
+      end
+    end
+
+    context 'with a duplicate code' do
+      let!(:existing) { create(:project_code, customer:, code: 'FRICTION') }
+      let(:params)    { { csv_text: "Project Code,Description\nFRICTION,Territory Assignment" } }
+
+      it 'redirects with a skipped notice' do
+        subject
+        expect(response).to redirect_to(customer_project_codes_path(customer))
+        expect(flash[:notice]).to include('skipped')
+      end
+    end
+
+    context 'with a code that fails model validation' do
+      let(:params) { { csv_text: "Project Code,Description\nBROKEN," } }
+
+      it 'returns 422' do
+        subject
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+
+      it 'renders the import form with the error' do
+        subject
+        expect(response.body).to include('BROKEN')
+      end
+    end
+
+    context 'with an empty CSV text' do
+      let(:params) { { csv_text: '' } }
+
+      it 'redirects with a nothing-to-import notice' do
+        subject
+        expect(response).to redirect_to(customer_project_codes_path(customer))
+        expect(flash[:notice]).to eq('Nothing to import')
+      end
+    end
+  end
+
   describe 'PATCH #archive' do
     let(:project_code) { create(:project_code, customer: customer, active: true) }
 

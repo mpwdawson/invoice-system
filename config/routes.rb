@@ -56,6 +56,10 @@ Rails.application.routes.draw do
     resources :customer_rates, only: [:create, :edit, :update, :destroy]
     resources :project_codes,  only: [:index, :new, :create, :edit, :update, :destroy] do
       member { patch :archive }
+      collection do
+        get  :import_form
+        post :import
+      end
     end
   end
 

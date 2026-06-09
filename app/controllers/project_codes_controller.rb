@@ -31,7 +31,7 @@ class ProjectCodesController < ApplicationController
     end
   end
 
-  # PATCH /customers/:customer_id/project_codes/:id/archive — toggles active/inactive
+  # PATCH /customers/:customer_id/project_codes/:id/archive — toggles active/inactive flag
   def archive
     @project_code.update!(active: !@project_code.active)
     redirect_to customer_project_codes_path(@customer)
@@ -44,6 +44,27 @@ class ProjectCodesController < ApplicationController
       redirect_to customer_project_codes_path(@customer),
                   alert: @project_code.errors.full_messages.to_sentence
     end
+  end
+
+  # GET /customers/:customer_id/project_codes/import_form — renders CSV textarea inside Turbo Frame
+  def import_form; end
+
+  # POST /customers/:customer_id/project_codes/import — bulk-creates codes from pasted CSV
+  def import
+    result = ProjectCodes::ImportService.call(customer: @customer, csv_text: params[:csv_text])
+
+    if result.errors.any?
+      @import_errors = result.errors
+      render :import_form, status: :unprocessable_content
+      return
+    end
+
+    parts = []
+    parts << "#{result.created.size} created" if result.created.any?
+    parts << "#{result.skipped.size} skipped (already exist)" if result.skipped.any?
+    notice = parts.any? ? parts.join(', ') : 'Nothing to import'
+
+    redirect_to customer_project_codes_path(@customer), notice:
   end
 
   private

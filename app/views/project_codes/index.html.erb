@@ -1,11 +1,18 @@
-<div class="flex items-center justify-between mb-6">
+<div class="flex items-center justify-between mb-4">
   <div>
     <p class="text-xs text-slate-500 mb-1"><%= link_to @customer.name, customer_path(@customer), class: "hover:underline" %></p>
     <h1 class="text-xl font-semibold">Project Codes</h1>
   </div>
-  <%= link_to "New Code", new_customer_project_code_path(@customer),
-      class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700" %>
+  <div class="flex items-center gap-3">
+    <%= link_to "Import CSV", import_form_customer_project_codes_path(@customer),
+        class: "text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300",
+        data: { turbo_frame: "project-code-import" } %>
+    <%= link_to "New Code", new_customer_project_code_path(@customer),
+        class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700" %>
+  </div>
 </div>
+
+<%= turbo_frame_tag "project-code-import", class: "block" %>
 
 <table class="w-full text-sm">
   <thead>

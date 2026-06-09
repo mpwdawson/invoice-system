@@ -1,0 +1,39 @@
+<%= turbo_frame_tag "project-code-import" do %>
+  <div class="mb-6 p-4 border border-slate-200 dark:border-slate-700 rounded">
+    <h2 class="text-sm font-medium mb-3">Import Project Codes</h2>
+
+    <% if @import_errors&.any? %>
+      <div class="mb-3 p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-300">
+        <ul class="list-disc list-inside space-y-0.5">
+          <% @import_errors.each do |error| %>
+            <li><%= error %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with url: import_customer_project_codes_path(@customer), method: :post,
+        data: { controller: "csv-import", turbo_frame: "_top" } do |f| %>
+      <div class="space-y-3">
+        <div>
+          <p class="block text-sm font-medium mb-1">CSV data</p>
+          <p class="text-xs text-slate-500 mb-2">
+            Header row required: <code class="font-mono">Project Code,Description</code>
+          </p>
+          <%= f.text_area :csv_text, rows: 12,
+              placeholder: "Project Code,Description\nFRICTION,Commercial-Sales Territory Assignment\nAIFIRST,IS-AI Initiative",
+              class: "w-full border rounded px-3 py-2 text-sm font-mono dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100",
+              data: { csv_import_target: "input", action: "input->csv-import#toggle" } %>
+        </div>
+        <div class="flex gap-3 items-center">
+          <%= f.submit "Import",
+              class: "px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed",
+              data: { csv_import_target: "submit" },
+              disabled: true %>
+          <%= link_to "Cancel", customer_project_codes_path(@customer),
+              class: "text-sm text-slate-500 hover:underline" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
