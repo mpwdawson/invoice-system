@@ -24,7 +24,7 @@ module TimeEntries
       by_date = scope.group_by(&:date)
 
       range.to_a.reverse.map do |date|
-        day_entries = by_date.fetch(date, [])
+        day_entries = by_date.fetch(date, []).sort_by { |entry| entry.task.title.downcase }
         Group.new(date:, items: day_entries, total_hours: day_entries.sum(&:hours))
       end
     end
