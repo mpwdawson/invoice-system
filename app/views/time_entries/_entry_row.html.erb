@@ -1,4 +1,6 @@
-<div class="flex items-center gap-3 px-3 py-2 text-sm hover:bg-slate-200 dark:hover:bg-slate-600 <%= local_assigns[:row_index]&.even? ? 'bg-slate-100 dark:bg-slate-700' : '' %>">
+<div class="flex items-center gap-3 px-3 py-2 text-sm hover:bg-slate-200 dark:hover:bg-slate-600 <%= local_assigns[:row_index]&.even? ? 'bg-slate-100 dark:bg-slate-700' : '' %>"
+     data-controller="time-entries--inline-edit"
+     data-time-entries--inline-edit-url-value="<%= update_inline_time_entry_path(entry) %>">
   <div data-controller="tasks--inline-edit"
        data-tasks--inline-edit-url-value="<%= update_inline_task_path(entry.task) %>"
        data-tasks--inline-edit-model-value="task"
@@ -19,7 +21,18 @@
   <% else %>
     <span class="text-xs px-1.5 py-0.5 rounded bg-slate-200 text-slate-500 dark:bg-slate-600 dark:text-slate-300">unbilled</span>
   <% end %>
-  <span class="tabular-nums text-slate-600 dark:text-slate-300"><%= entry.hours %>h</span>
-  <%= link_to '✎', edit_time_entry_path(entry),
-      class: 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200' %>
+  <input type="number"
+         value="<%= entry.hours %>"
+         step="0.5" min="0.5"
+         data-time-entries--inline-edit-target="hours"
+         data-action="change->time-entries--inline-edit#save"
+         class="w-14 tabular-nums text-right text-slate-600 dark:text-slate-300 bg-transparent border border-transparent rounded px-1 hover:border-slate-200 focus:border-slate-300 focus:outline-none dark:hover:border-slate-600 dark:focus:border-slate-500">
+  <input type="date"
+         value="<%= entry.date %>"
+         data-time-entries--inline-edit-target="date"
+         data-action="change->time-entries--inline-edit#save"
+         class="text-xs text-slate-400 bg-transparent border border-transparent rounded px-1 hover:border-slate-200 focus:border-slate-300 focus:outline-none dark:hover:border-slate-600 dark:focus:border-slate-500">
+  <%= button_to '×', time_entry_path(entry), method: :delete,
+      form: { data: { turbo_confirm: 'Delete this entry?' } },
+      class: 'text-slate-400 hover:text-red-500 bg-transparent border-0 p-0 cursor-pointer text-base leading-none' %>
 </div>
