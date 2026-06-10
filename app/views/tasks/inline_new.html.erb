@@ -31,6 +31,13 @@
             { class: "w-full border rounded px-2 py-1.5 text-sm dark:bg-slate-700 dark:border-slate-600" } %>
       </div>
 
+      <div>
+        <%= label_tag :ticket_ref, "Ticket #", class: "block text-xs font-medium mb-1" %>
+        <%= text_field_tag :ticket_ref, params[:ticket_ref],
+            placeholder: "AW-1234 (optional)",
+            class: "w-full border rounded px-2 py-1.5 text-sm dark:bg-slate-700 dark:border-slate-600" %>
+      </div>
+
       <div class="pt-1">
         <%= f.submit "Create Task",
             class: "px-3 py-1.5 bg-slate-800 text-white text-xs rounded hover:bg-slate-700 dark:bg-slate-600 cursor-pointer" %>

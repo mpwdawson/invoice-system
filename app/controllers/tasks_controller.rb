@@ -64,10 +64,15 @@ class TasksController < ApplicationController
   # POST /tasks/inline_create — creates task and returns auto-select slot for the entry form
   def inline_create
     @task = Task.new(inline_task_params)
-    return if @task.save
-
-    load_form_data
-    render :inline_new, formats: [:html], status: :unprocessable_content
+    if @task.save
+      if params[:ticket_ref].present?
+        parsed = Tasks::ParseTicketRefsService.call(input: params[:ticket_ref])
+        parsed.each { |ref| @task.ticket_references.find_or_create_by(ref) }
+      end
+    else
+      load_form_data
+      render :inline_new, formats: [:html], status: :unprocessable_content
+    end
   end
 
   # PATCH /tasks/:id/update_inline

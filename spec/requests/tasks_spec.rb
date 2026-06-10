@@ -196,6 +196,26 @@ describe TasksController do
         expect(response).to have_http_status(:unprocessable_content)
       end
     end
+
+    context 'with a valid ticket_ref param' do
+      let(:params) { { task: { title: 'New work', customer_id: customer.id }, ticket_ref: 'AW-9999' } }
+
+      it 'creates a TicketReference on the new task' do
+        subject
+        ref = Task.last.ticket_references.first
+        expect(ref.prefix).to eq('AW')
+        expect(ref.number).to eq(9999)
+      end
+    end
+
+    context 'with an unparseable ticket_ref' do
+      let(:params) { { task: { title: 'New work', customer_id: customer.id }, ticket_ref: 'not-a-ref' } }
+
+      it 'creates the task without a TicketReference' do
+        subject
+        expect(Task.last.ticket_references).to be_empty
+      end
+    end
   end
 
   describe 'PATCH #update_inline' do
