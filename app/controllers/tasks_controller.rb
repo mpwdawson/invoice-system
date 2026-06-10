@@ -5,12 +5,17 @@ class TasksController < ApplicationController
 
   def index
     @tasks = Tasks::SearchQuery.call(
-      query: params[:query],
-      customer_id: params[:customer_id],
-      status: params[:status].presence || 'active',
-      billable: params[:billable]
+      query:           params[:query],
+      customer_id:     params[:customer_id],
+      project_code_id: params[:project_code_id],
+      date_from:       params[:date_from],
+      status:          params[:status].presence || 'active',
+      billable:        params[:billable],
+      sort:            params[:sort],
+      direction:       params[:direction]
     )
-    @customers = Customer.order(:name)
+    @customers     = Customer.order(:name)
+    @project_codes = ProjectCode.active.ordered
   end
 
   def show; end
