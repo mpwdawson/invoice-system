@@ -521,33 +521,33 @@ B-00 rails new (OS setup, Ruby, gems)
 
 ## Summary
 
-| Chunk | Story | Phase | Complexity |
-|-------|-------|-------|------------|
-| B-00 | —    | App Setup | Small |
-| B-01 | S-01 | Foundation | Small |
-| B-02 | S-01 | Foundation | Small |
-| B-03 | S-01 | Foundation | Small |
-| B-04 | S-01 | Foundation | Small |
-| B-05 | S-02 | Customers | Small |
-| B-06 | S-02 | Customers | Medium |
-| B-07 | S-03 | Tasks | Small |
-| B-08 | S-03 | Tasks | Medium |
-| B-09 | S-03 | Tasks | Small |
-| B-10 | S-04 | Log Time | Small |
-| B-11 | S-04 | Log Time | Large |
-| B-12 | S-04 | Log Time | Medium |
-| B-13 | S-04 | Log Time | Medium |
-| B-14 | S-04 | Log Time | Medium |
-| B-15 | S-06 | Import | Medium |
-| B-16 | S-06 | Import | Medium |
-| B-17 | S-07 | Reports | Small |
-| B-18 | S-07 | Reports | Small |
-| B-19 | S-08 | Wizard | Medium |
-| B-20 | S-08 | Wizard | Medium |
-| B-21 | S-08 | Wizard | Medium |
-| B-22 | S-08 | Wizard | Medium |
-| B-23 | S-08 | Wizard | Small |
-| B-24 | S-09 | LLM | Medium |
-| B-25 | S-09 | LLM | Medium |
+| Chunk | Story | Phase | Complexity | Status |
+|-------|-------|-------|------------|--------|
+| B-00 | —    | App Setup | Small | ✓ Done |
+| B-01 | S-01 | Foundation | Small | ✓ Done |
+| B-02 | S-01 | Foundation | Small | ✓ Done |
+| B-03 | S-01 | Foundation | Small | ✓ Done |
+| B-04 | S-01 | Foundation | Small | ✓ Done |
+| B-05 | S-02 | Customers | Small | ✓ Done |
+| B-06 | S-02 | Customers | Medium | ✓ Done |
+| B-07 | S-03 | Tasks | Small | ✓ Done |
+| B-08 | S-03 | Tasks | Medium | ✓ Done |
+| B-09 | S-03 | Tasks | Small | ✓ Done |
+| B-10 | S-04 | Log Time | Small | ✓ Done |
+| B-11 | S-04 | Log Time | Large | ✓ Done |
+| B-12 | S-04 | Log Time | Medium | ✓ Done |
+| B-13 | S-04 | Log Time | Medium | ✓ Done |
+| B-14 | S-04 | Log Time | Medium | ✓ Done |
+| B-15 | S-06 | Import | Medium | ✓ Done |
+| B-16 | S-06 | Import | Medium | ✓ Done |
+| B-17 | S-07 | Reports | Small | ✓ Done |
+| B-18 | S-07 | Reports | Small | ✓ Done |
+| B-19 | S-08 | Wizard | Medium | ✓ Done |
+| B-20 | S-08 | Wizard | Medium | ✓ Done |
+| B-21 | S-08 | Wizard | Medium | ✓ Done |
+| B-22 | S-08 | Wizard | Medium | ✓ Done |
+| B-23 | S-08 | Wizard | Small | ✓ Done |
+| B-24 | S-09 | LLM | Medium | Blocked — needs OpenClaw codebase |
+| B-25 | S-09 | LLM | Medium | Blocked — needs sample invoice PDFs |
 
 **26 chunks total.** S-05 merged into S-04. S-10/PDF, S-11/Docker, S-12/Backup deferred.
