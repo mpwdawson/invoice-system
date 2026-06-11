@@ -13,6 +13,7 @@ export default class extends Controller {
     fetch(this.urlValue, {
       method: "PATCH",
       headers: {
+        "Accept":       "text/vnd.turbo-stream.html",
         "Content-Type": "application/json",
         "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
       },
@@ -26,6 +27,7 @@ export default class extends Controller {
       if (response.ok) {
         this.savedHours = this.hoursTarget.value
         this.savedDate  = this.dateTarget.value
+        response.text().then(html => Turbo.renderStreamMessage(html))
       } else {
         this.hoursTarget.value = this.savedHours
         this.dateTarget.value  = this.savedDate

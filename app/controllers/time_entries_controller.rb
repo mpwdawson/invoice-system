@@ -9,7 +9,8 @@ class TimeEntriesController < ApplicationController
   def update_inline
     @time_entry = TimeEntry.find(params.expect(:id))
     if @time_entry.update(inline_time_entry_params)
-      head :ok
+      @customer_id = session[:log_customer_id]
+      @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
     else
       head :unprocessable_content
     end

@@ -195,17 +195,26 @@ describe TimeEntriesController do
   end
 
   describe 'PATCH #update_inline' do
-    subject { patch update_inline_time_entry_path(entry), params: params, as: :json }
+    subject do
+      patch update_inline_time_entry_path(entry),
+            params: params.to_json,
+            headers: { 'Content-Type' => 'application/json', 'Accept' => 'text/vnd.turbo-stream.html' }
+    end
 
     let(:entry) { create(:time_entry, task:, hours: 1.0, date: Date.current) }
 
     context 'with valid params' do
       let(:params) { { time_entry: { hours: '3.0', date: Date.current.to_s } } }
 
-      it 'updates the entry and returns 200' do
+      it 'updates the entry hours' do
+        subject
+        expect(entry.reload.hours).to eq(3.0)
+      end
+
+      it 'returns a turbo stream with the updated daily total' do
         subject
         expect(response).to have_http_status(:ok)
-        expect(entry.reload.hours).to eq(3.0)
+        expect(response.body).to include('3.0h')
       end
     end
 
