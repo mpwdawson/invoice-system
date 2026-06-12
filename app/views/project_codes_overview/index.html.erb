@@ -13,6 +13,15 @@
 
     <% if active.any? %>
       <table class="w-full text-sm mb-2">
+        <thead>
+          <tr class="border-b text-left text-xs text-slate-400">
+            <th class="pb-1 font-medium">Code</th>
+            <th class="pb-1 font-medium">Description</th>
+            <th class="pb-1 pr-4 font-medium text-right">Tasks</th>
+            <th class="pb-1 font-medium">Status</th>
+            <th class="pb-1"></th>
+          </tr>
+        </thead>
         <tbody>
           <% active.each do |code| %>
             <%= render 'project_codes/code_row', code: code, customer: customer %>
@@ -27,6 +36,15 @@
           <%= archived.size %> archived
         </summary>
         <table class="w-full text-sm mt-1">
+          <thead>
+            <tr class="border-b text-left text-xs text-slate-400">
+              <th class="pb-1 font-medium">Code</th>
+              <th class="pb-1 font-medium">Description</th>
+              <th class="pb-1 pr-4 font-medium text-right">Tasks</th>
+              <th class="pb-1 font-medium">Status</th>
+              <th class="pb-1"></th>
+            </tr>
+          </thead>
           <tbody>
             <% archived.each do |code| %>
               <%= render 'project_codes/code_row', code: code, customer: customer %>
