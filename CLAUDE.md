@@ -10,7 +10,7 @@
 - `app/javascript/controllers/**/*.js` - Existing Stimulus patterns
 - `app/views/layouts/application.html.erb` - How Turbo/CSS are included
 - `.rubocop.yml` - Preferred syntax (do not run linting)
-- `wiki/` - Design decisions, data model, workflows, and epic stories
+- `docs/` - Design decisions, data model, workflows, and epic stories
 
 ## Architecture
 
