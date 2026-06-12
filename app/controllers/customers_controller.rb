@@ -9,7 +9,7 @@ class CustomersController < ApplicationController
 
   def show
     @customer_rates = @customer.customer_rates.order(effective_from: :desc)
-    @current_rate   = CustomerRate.current_for(@customer, Time.zone.today)
+    @current_rate   = CustomerRate.current_for(@customer, user_date)
   end
 
   def new
