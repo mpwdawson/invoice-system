@@ -1,0 +1,21 @@
+<tr class="border-b hover:bg-slate-50 dark:hover:bg-slate-800 <%= 'opacity-50' unless code.active? %>">
+  <td class="py-1 font-mono text-xs">
+    <%= link_to code.code, customer_project_code_path(customer, code), class: "hover:underline" %>
+  </td>
+  <td class="py-1"><%= code.description %></td>
+  <td class="py-1 text-slate-500"><%= code.active? ? "Active" : "Archived" %></td>
+  <td class="py-1 text-right space-x-3">
+    <%= link_to "Edit", edit_customer_project_code_path(customer, code),
+          class: "text-xs text-slate-500 hover:underline" %>
+    <%= button_to code.active? ? "Archive" : "Unarchive",
+          archive_customer_project_code_path(customer, code),
+          method: :patch, form: { class: "inline" },
+          class: "text-xs text-slate-500 hover:underline bg-transparent border-none cursor-pointer p-0" %>
+    <% if code.tasks.empty? %>
+      <%= button_to "Delete", customer_project_code_path(customer, code),
+            method: :delete, form: { class: "inline" },
+            data: { turbo_confirm: "Delete #{code.code}?" },
+            class: "text-xs text-red-400 hover:underline bg-transparent border-none cursor-pointer p-0" %>
+    <% end %>
+  </td>
+</tr>
