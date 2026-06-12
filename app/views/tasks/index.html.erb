@@ -54,10 +54,10 @@
     <thead>
       <tr class="border-b text-left text-slate-500">
         <th class="pb-2 font-medium"><%= sort_link("Title", "title", request.query_parameters) %></th>
-        <th class="pb-2 font-medium"><%= sort_link("Customer", "customer", request.query_parameters) %></th>
-        <th class="pb-2 font-medium"><%= sort_link("Project Code", "project_code", request.query_parameters) %></th>
-        <th class="pb-2 font-medium">Billable</th>
-        <th class="pb-2 font-medium"><%= sort_link("Created", "created_at", request.query_parameters) %></th>
+        <th class="pb-2 font-medium hidden sm:table-cell"><%= sort_link("Customer", "customer", request.query_parameters) %></th>
+        <th class="pb-2 font-medium hidden sm:table-cell"><%= sort_link("Project Code", "project_code", request.query_parameters) %></th>
+        <th class="pb-2 font-medium hidden sm:table-cell">Billable</th>
+        <th class="pb-2 font-medium hidden sm:table-cell"><%= sort_link("Created", "created_at", request.query_parameters) %></th>
         <th class="pb-2"></th>
       </tr>
     </thead>
@@ -67,18 +67,18 @@
           <td class="py-1">
             <%= link_to task.title, task_path(task), class: "hover:underline font-medium", data: { turbo_frame: "_top" } %>
           </td>
-          <td class="py-1 text-slate-600 dark:text-slate-400"><%= task.customer.name %></td>
-          <td class="py-1 font-mono text-xs text-slate-600 dark:text-slate-400">
+          <td class="py-1 text-slate-600 dark:text-slate-400 hidden sm:table-cell"><%= task.customer.name %></td>
+          <td class="py-1 font-mono text-xs text-slate-600 dark:text-slate-400 hidden sm:table-cell">
             <%= task.project_code&.code || "—" %>
           </td>
-          <td class="py-1">
+          <td class="py-1 hidden sm:table-cell">
             <% if task.billable? %>
               <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs rounded-full">Billable</span>
             <% else %>
               <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-500 text-xs rounded-full">Non-billable</span>
             <% end %>
           </td>
-          <td class="py-1 text-xs text-slate-500 dark:text-slate-400">
+          <td class="py-1 text-xs text-slate-500 dark:text-slate-400 hidden sm:table-cell">
             <%= task.created_at.in_time_zone(current_timezone).strftime("%-d %b %Y") %>
           </td>
           <td class="py-1 text-right space-x-3">
