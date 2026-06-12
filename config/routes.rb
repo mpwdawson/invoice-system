@@ -56,6 +56,8 @@ Rails.application.routes.draw do
     resources :ticket_references, only: [:create, :destroy]
   end
 
+  get 'project_codes', to: 'project_codes_overview#index', as: :project_codes
+
   resources :customers, only: [:index, :show, :new, :create, :edit, :update] do
     resources :customer_rates, only: [:create, :edit, :update, :destroy]
     resources :project_codes,  only: [:index, :show, :new, :create, :edit, :update, :destroy] do

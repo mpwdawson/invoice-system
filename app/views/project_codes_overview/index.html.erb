@@ -1,0 +1,43 @@
+<h1 class="text-xl font-semibold mb-6">Project Codes</h1>
+
+<% @customers.each do |customer| %>
+  <% active   = customer.project_codes.select(&:active?).sort_by(&:code) %>
+  <% archived = customer.project_codes.reject(&:active?).sort_by(&:code) %>
+  <div class="mb-8">
+    <div class="flex items-center justify-between mb-2">
+      <%= link_to customer.name, customer_path(customer),
+            class: "text-sm font-semibold hover:underline" %>
+      <%= link_to "+ New Code", new_customer_project_code_path(customer),
+            class: "text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300" %>
+    </div>
+
+    <% if active.any? %>
+      <table class="w-full text-sm mb-2">
+        <tbody>
+          <% active.each do |code| %>
+            <%= render 'project_codes/code_row', code: code, customer: customer %>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+
+    <% if archived.any? %>
+      <details class="mt-1">
+        <summary class="text-xs text-slate-400 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 mb-1">
+          <%= archived.size %> archived
+        </summary>
+        <table class="w-full text-sm mt-1">
+          <tbody>
+            <% archived.each do |code| %>
+              <%= render 'project_codes/code_row', code: code, customer: customer %>
+            <% end %>
+          </tbody>
+        </table>
+      </details>
+    <% end %>
+
+    <% if active.empty? && archived.empty? %>
+      <p class="text-xs text-slate-400 pl-1">No project codes.</p>
+    <% end %>
+  </div>
+<% end %>
