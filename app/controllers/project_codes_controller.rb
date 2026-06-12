@@ -2,7 +2,8 @@
 
 class ProjectCodesController < ApplicationController
   before_action :set_customer
-  before_action :set_project_code, only: [:show, :edit, :update, :archive, :destroy]
+  before_action :set_project_code, only: [:show, :edit, :update, :archive, :destroy,
+                                          :search_tasks, :assign_tasks, :remove_task]
 
   def index
     @project_codes = @customer.project_codes.includes(:tasks).ordered
@@ -50,6 +51,34 @@ class ProjectCodesController < ApplicationController
     end
   end
 
+  # GET /customers/:customer_id/project_codes/:id/search_tasks?q=...
+  def search_tasks
+    q = params[:q].to_s.strip
+    @search_tasks = q.length >= 2 ? search_results(q) : []
+  end
+
+  # POST /customers/:customer_id/project_codes/:id/assign_tasks
+  def assign_tasks
+    task_ids = Array(params[:task_ids]).map(&:to_i).uniq
+    ProjectCodes::AssignTasksService.call(project_code: @project_code, task_ids:)
+    @tasks = @project_code.tasks.ordered
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to customer_project_code_path(@customer, @project_code) }
+    end
+  end
+
+  # DELETE /customers/:customer_id/project_codes/:id/remove_task?task_id=...
+  def remove_task
+    task = @customer.tasks.find(params.expect(:task_id))
+    task.update!(project_code: nil)
+    @tasks = @project_code.tasks.ordered
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to customer_project_code_path(@customer, @project_code) }
+    end
+  end
+
   # GET /customers/:customer_id/project_codes/import_form — renders CSV textarea inside Turbo Frame
   def import_form; end
 
@@ -83,5 +112,15 @@ class ProjectCodesController < ApplicationController
 
   def project_code_params
     params.expect(project_code: [:code, :description])
+  end
+
+  def search_results(q)
+    ids = q.split.flat_map do |token|
+      Tasks::SearchQuery.call(query: token, customer_id: @customer.id, status: 'active')
+                        .where("tasks.project_code_id IS NULL OR tasks.project_code_id != ?", @project_code.id)
+                        .pluck(:id)
+    end.uniq
+
+    Task.includes(:ticket_references, :project_code).where(id: ids).ordered
   end
 end

@@ -1,0 +1,27 @@
+<%= turbo_frame_tag "task-search-results-#{@project_code.id}" do %>
+  <% if @search_tasks.empty? %>
+    <p class="text-sm text-slate-400 mb-2">No matches.</p>
+  <% else %>
+    <%= form_with url: assign_tasks_customer_project_code_path(@customer, @project_code),
+          method: :post do |f| %>
+      <div class="space-y-1 mb-3">
+        <% @search_tasks.each do |task| %>
+          <label class="flex items-start gap-2 text-sm cursor-pointer">
+            <%= check_box_tag "task_ids[]", task.id, true, class: "mt-0.5 rounded border" %>
+            <span>
+              <%= task.title %>
+              <span class="text-xs text-slate-500 font-mono">
+                <%= task.ticket_references.map(&:to_s).join(', ').presence %>
+              </span>
+              <% if task.project_code_id.present? %>
+                <span class="text-xs text-amber-600">&rarr; reassigns from <%= task.project_code.code %></span>
+              <% end %>
+            </span>
+          </label>
+        <% end %>
+      </div>
+      <%= f.submit "Assign selected",
+            class: "px-3 py-1.5 bg-slate-800 text-white text-sm rounded hover:bg-slate-700 cursor-pointer" %>
+    <% end %>
+  <% end %>
+<% end %>

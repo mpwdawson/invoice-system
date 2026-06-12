@@ -21,34 +21,24 @@
   </div>
 </dl>
 
-<h2 class="text-base font-semibold mb-3">Tasks (<%= @tasks.size %>)</h2>
+<h2 class="text-base font-semibold mb-3">Assigned tasks (<%= @tasks.size %>)</h2>
 
-<% if @tasks.any? %>
-  <table class="w-full text-sm">
-    <thead>
-      <tr class="border-b text-left text-slate-500">
-        <th class="pb-2 font-medium">Title</th>
-        <th class="pb-2 font-medium">Status</th>
-        <th class="pb-2 font-medium">Billable</th>
-        <th class="pb-2 font-medium text-right">Hours logged</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @tasks.each do |task| %>
-        <tr class="border-b even:bg-slate-100 dark:even:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 <%= "opacity-50" if task.archived? %>">
-          <td class="py-1">
-            <%= link_to task.title, task_path(task), class: "hover:underline" %>
-          </td>
-          <td class="py-1 text-slate-500 capitalize"><%= task.status %></td>
-          <td class="py-1 text-slate-500"><%= task.billable? ? "Yes" : "No" %></td>
-          <td class="py-1 text-right font-mono text-xs">
-            <% total = task.time_entries.sum(&:hours) %>
-            <%= total.positive? ? "#{total}h" : "—" %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p class="text-sm text-slate-400">No tasks assigned to this project code yet.</p>
+<%= turbo_frame_tag "assigned-tasks-#{@project_code.id}" do %>
+  <%= render 'assigned_tasks', tasks: @tasks, customer: @customer, project_code: @project_code %>
 <% end %>
+
+<div class="mt-8 border-t pt-6"
+     data-controller="task-assign"
+     data-task-assign-search-url-value="<%= search_tasks_customer_project_code_path(@customer, @project_code) %>">
+
+  <h3 class="text-sm font-semibold mb-3">Assign tasks</h3>
+
+  <textarea rows="2"
+            placeholder="AW-101 AW-202 refactor auth..."
+            class="w-full border rounded px-3 py-2 text-sm mb-3 font-mono"
+            data-task-assign-target="query"
+            data-action="input->task-assign#search"></textarea>
+
+  <turbo-frame id="task-search-results-<%= @project_code.id %>"
+               data-task-assign-target="resultsFrame"></turbo-frame>
+</div>

@@ -61,7 +61,12 @@ Rails.application.routes.draw do
   resources :customers, only: [:index, :show, :new, :create, :edit, :update] do
     resources :customer_rates, only: [:create, :edit, :update, :destroy]
     resources :project_codes,  only: [:index, :show, :new, :create, :edit, :update, :destroy] do
-      member { patch :archive }
+      member do
+        patch  :archive
+        get    :search_tasks
+        post   :assign_tasks
+        delete :remove_task
+      end
       collection do
         get  :import_form
         post :import

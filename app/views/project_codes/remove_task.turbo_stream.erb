@@ -1,0 +1,5 @@
+<%= turbo_stream.replace "assigned-tasks-#{@project_code.id}" do %>
+  <%= turbo_frame_tag "assigned-tasks-#{@project_code.id}" do %>
+    <%= render 'assigned_tasks', tasks: @tasks, customer: @customer, project_code: @project_code %>
+  <% end %>
+<% end %>
