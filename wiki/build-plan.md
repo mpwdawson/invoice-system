@@ -549,5 +549,12 @@ B-00 rails new (OS setup, Ruby, gems)
 | B-23 | S-08 | Wizard | Small | ✓ Done |
 | B-24 | S-09 | LLM | Medium | Blocked — needs OpenClaw codebase |
 | B-25 | S-09 | LLM | Medium | Blocked — needs sample invoice PDFs |
+| M-01 | —   | Mobile | Small | ✓ Done — collapsible sidebar (slide-over on mobile) |
+| M-02 | —   | Mobile | Small | ✓ Done — Log Time responsive (full-width inputs, hide badges) |
+| M-03 | —   | Mobile | Medium | ✓ Done — Project Codes sidebar link + flat overview page |
+| M-04 | —   | Mobile | Small | ✓ Done — Tasks index hides secondary columns below sm: |
+| M-05 | —   | ProjectCodes | Medium | ✓ Done — bulk task assignment panel on ProjectCode show page |
+| M-06 | —   | ProjectCodes | Small | ✓ Done — task count column + headers on overview page |
+| M-07 | —   | Nav | Small | ✓ Done — Import sidebar link; wider textarea on import page; nav reordered to workflow order |
 
-**26 chunks total.** S-05 merged into S-04. S-10/PDF, S-11/Docker, S-12/Backup deferred.
+**33 chunks total.** S-05 merged into S-04. S-10/PDF, S-11/Docker, S-12/Backup deferred.

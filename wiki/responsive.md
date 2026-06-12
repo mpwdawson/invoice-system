@@ -11,10 +11,10 @@ This plan covers the four areas worth tackling, in priority order. Reports, Cust
 ## Story Map
 
 ```
-M-01  Collapsible sidebar         ← prerequisite for mobile nav everywhere
-  └─  M-02  Log Time responsive   ← highest-priority page (daily use)
-  └─  M-03  Project Codes shortcut (new nav link + flat overview page)
-  └─  M-04  Tasks index responsive
+M-01  Collapsible sidebar         ✓ Done
+  └─  M-02  Log Time responsive   ✓ Done
+  └─  M-03  Project Codes shortcut (new nav link + flat overview page)  ✓ Done
+  └─  M-04  Tasks index responsive  ✓ Done
 ```
 
 M-03 is a new feature (nav shortcut + new page), not a reskin — independent of M-02 and M-04.

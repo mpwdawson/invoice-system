@@ -174,13 +174,15 @@ Key decisions and rationale. These represent the "why" behind the data model and
 
 ## UI Layout & Design
 
-**Decision:** Fixed left sidebar navigation. Dark mode supported via Tailwind `class` strategy. No custom branding or mobile layout — desktop LAN tool only.
+**Decision:** Fixed left sidebar navigation, collapsible on mobile. Dark mode supported via Tailwind `class` strategy. No custom branding — personal tool.
 
-**Nav structure:** App name at top + dark mode toggle, links for: Log Time / Tasks / Customers / Reports / Invoices / Settings.
+**Nav structure (workflow order):** App name at top + dark mode toggle, links for: Log Time / Tasks / Project Codes / Customers / Import / Reports / Invoices / Settings. Ordered by frequency of use / billing cycle flow, not alphabetically.
 
 **Home screen:** Login redirects directly to Log Time. No separate dashboard.
 
 **Dark mode implementation:** Tailwind `darkMode: 'class'` in config. A Stimulus controller toggles the `dark` class on `<html>` and persists the preference to `localStorage`. No server-side preference storage needed.
+
+**Mobile:** Sidebar slides in as an overlay below `md:` breakpoint (hamburger button top-left). Tasks index hides secondary columns below `sm:`. Log Time form goes full-width below `sm:`. Responsive support added in M-01–M-04.
 
 **Why:** Sidebar gives instant one-click access to all sections. No dashboard — the daily log screen is where you spend 95% of your time, so go there directly. Dark mode is a daily-use quality-of-life feature. Neutral Tailwind slate/gray palette — no custom branding needed for a personal tool.
 
