@@ -71,7 +71,7 @@
       <% flash.each do |type, message| %>
         <p id="flash-<%= type %>" class="px-6 py-3 text-sm"><%= message %></p>
       <% end %>
-      <main class="p-6">
+      <main class="px-6 pb-6 pt-14 md:pt-6">
         <%= yield %>
       </main>
     </div>
