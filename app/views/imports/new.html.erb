@@ -8,8 +8,8 @@
 </p>
 
 <%= form_with url: preview_import_path, data: { turbo: false } do |f| %>
-  <div class="space-y-4 max-w-2xl">
-    <div>
+  <div class="space-y-4">
+    <div class="max-w-xs">
       <%= f.label :customer_id, "Customer", class: "block text-xs font-medium mb-1" %>
       <%= f.collection_select :customer_id, @customers, :id, :name,
             { prompt: "Select a customer" },
