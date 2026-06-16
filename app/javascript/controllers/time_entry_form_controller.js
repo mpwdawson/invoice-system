@@ -9,6 +9,25 @@ export default class extends Controller {
 
   static values = { customerId: String }
 
+  connect() {
+    this.#boundCheckDate = this.#checkDate.bind(this)
+    document.addEventListener('visibilitychange', this.#boundCheckDate)
+  }
+
+  disconnect() {
+    document.removeEventListener('visibilitychange', this.#boundCheckDate)
+  }
+
+  reset(event) {
+    if (!event.detail.success) return
+    this.taskInputTarget.value    = ""
+    this.taskIdInputTarget.value  = ""
+    this.hoursInputTarget.value   = ""
+    this.dropdownFrameTarget.innerHTML = ""
+    this.previewFrameTarget.removeAttribute("src")
+    this.previewFrameTarget.innerHTML = ""
+  }
+
   searchTask() {
     clearTimeout(this.#searchTimeout)
     this.#searchTimeout = setTimeout(() => {
@@ -55,5 +74,15 @@ export default class extends Controller {
     this.previewFrameTarget.src = `/time_entries/preview?${params}`
   }
 
-  #searchTimeout = null
+  #searchTimeout  = null
+  #boundCheckDate = null
+
+  #checkDate() {
+    if (document.visibilityState !== 'visible') return
+    const today = new Date().toLocaleDateString('en-CA')
+
+    if (this.dateInputTarget.value !== today) {
+      this.dateInputTarget.value = today
+    }
+  }
 }

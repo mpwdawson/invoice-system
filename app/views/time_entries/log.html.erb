@@ -16,7 +16,8 @@
 <% end %>
 
 <div data-controller="time-entry-form"
-     data-time-entry-form-customer-id-value="<%= @customer_id.to_s %>">
+     data-time-entry-form-customer-id-value="<%= @customer_id.to_s %>"
+     data-action="turbo:submit-end->time-entry-form#reset">
   <div id="time-entry-form-wrapper" class="max-w-lg">
     <%= render 'form', date: @date %>
   </div>
