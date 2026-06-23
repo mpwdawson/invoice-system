@@ -1,9 +1,7 @@
 <%= turbo_frame_tag "task-search-results" do %>
   <% if @tasks.any? %>
     <ul class="border rounded shadow-lg bg-white dark:bg-slate-800 dark:border-slate-600 divide-y dark:divide-slate-700 max-h-60 overflow-y-auto">
-      <% @tasks.each do |task| %>
-        <%= render 'search_result', task: task %>
-      <% end %>
+      <%= render partial: 'search_result', collection: @tasks, as: :task %>
     </ul>
   <% elsif @query.present? %>
     <ul class="border rounded shadow-lg bg-white dark:bg-slate-800 dark:border-slate-600">

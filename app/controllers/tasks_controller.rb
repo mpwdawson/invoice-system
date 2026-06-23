@@ -52,7 +52,7 @@ class TasksController < ApplicationController
   def search
     @query       = params[:query]
     @customer_id = params[:customer_id].presence
-    @tasks = Tasks::SearchQuery.call(query: @query, status: 'active', customer_id: @customer_id)
+    @tasks = Tasks::SearchQuery.call(query: @query, status: 'active', customer_id: @customer_id).limit(15)
   end
 
   # GET /tasks/inline_new — compact create form inside the Log Time search dropdown
