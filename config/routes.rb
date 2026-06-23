@@ -16,7 +16,10 @@ Rails.application.routes.draw do
 
   resources :time_entries, only: [:show, :create, :edit, :update, :destroy] do
     collection { get :preview }
-    member     { patch :update_inline }
+    member do
+      patch :update_inline
+      patch :reassign
+    end
   end
 
   get  'import',         to: 'imports#new',     as: :new_import

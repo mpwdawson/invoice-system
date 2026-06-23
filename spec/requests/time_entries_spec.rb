@@ -269,5 +269,93 @@ describe TimeEntriesController do
         expect { subject }.to change(TimeEntry, :count).by(-1)
       end
     end
+
+    context 'for an unbilled entry from task show (source=task)' do
+      subject { delete time_entry_path(entry, source: "task") }
+
+      let!(:entry) { create(:time_entry, task:) }
+
+      it 'deletes the entry' do
+        expect { subject }.to change(TimeEntry, :count).by(-1)
+      end
+
+      it 'redirects to the task page' do
+        subject
+        expect(response).to redirect_to(task_path(task))
+      end
+    end
+  end
+
+  describe 'PATCH #reassign' do
+    let(:target_task) { create(:task, customer: customer) }
+    let!(:entry) { create(:time_entry, task: task, date: Date.current, hours: 2.0) }
+
+    context 'with a valid target task (same customer)' do
+      subject { patch reassign_time_entry_path(entry), params: { task_id: target_task.id } }
+
+      it 'reassigns the entry' do
+        subject
+        expect(entry.reload.task).to eq(target_task)
+      end
+
+      it 'redirects to the source task' do
+        subject
+        expect(response).to redirect_to(task_path(task))
+      end
+
+      it 'sets a success flash' do
+        subject
+        expect(flash[:notice]).to include("reassigned")
+      end
+    end
+
+    context 'when target task belongs to a different customer' do
+      let(:other_customer) { create(:customer) }
+      let(:other_task) { create(:task, customer: other_customer) }
+
+      subject { patch reassign_time_entry_path(entry), params: { task_id: other_task.id } }
+
+      it 'does not reassign' do
+        subject
+        expect(entry.reload.task).to eq(task)
+      end
+
+      it 'redirects with alert' do
+        subject
+        expect(flash[:alert]).to include("same customer")
+      end
+    end
+
+    context 'when entry is billed' do
+      let!(:billed_entry) { create(:time_entry, task: task, date: Date.current - 1, hours: 1.0, invoice_id: 99) }
+
+      subject { patch reassign_time_entry_path(billed_entry), params: { task_id: target_task.id } }
+
+      it 'does not reassign' do
+        subject
+        expect(billed_entry.reload.task).to eq(task)
+      end
+
+      it 'redirects with alert' do
+        subject
+        expect(flash[:alert]).to include("billed")
+      end
+    end
+
+    context 'when date conflicts with existing entry on target task' do
+      before { create(:time_entry, task: target_task, date: Date.current, hours: 1.0) }
+
+      subject { patch reassign_time_entry_path(entry), params: { task_id: target_task.id } }
+
+      it 'does not reassign' do
+        subject
+        expect(entry.reload.task).to eq(task)
+      end
+
+      it 'redirects with error message' do
+        subject
+        expect(flash[:alert]).to be_present
+      end
+    end
   end
 end

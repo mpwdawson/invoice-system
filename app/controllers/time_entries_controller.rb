@@ -53,8 +53,40 @@ class TimeEntriesController < ApplicationController
     if @time_entry.invoice_id? && params[:force].blank?
       @soft_lock = true
     else
+      task_redirect = @time_entry.task if params[:source] == "task"
       @time_entry.destroy!
+
+      if task_redirect
+        redirect_to task_path(task_redirect), notice: "Entry deleted."
+        return
+      end
+
       @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
+    end
+  end
+
+  # PATCH /time_entries/:id/reassign — move entry to a different task
+  def reassign
+    @time_entry = TimeEntry.find(params.expect(:id))
+    target_task = Task.find(params.expect(:task_id))
+
+    if @time_entry.invoice_id?
+      redirect_to task_path(@time_entry.task), alert: "Cannot reassign a billed entry."
+      return
+    end
+
+    unless target_task.customer_id == @time_entry.task.customer_id
+      redirect_to task_path(@time_entry.task), alert: "Target task must belong to the same customer."
+      return
+    end
+
+    original_task = @time_entry.task
+    @time_entry.task = target_task
+
+    if @time_entry.save
+      redirect_to task_path(original_task), notice: "Entry reassigned to \"#{target_task.title}\"."
+    else
+      redirect_to task_path(original_task), alert: @time_entry.errors.full_messages.to_sentence
     end
   end
 
