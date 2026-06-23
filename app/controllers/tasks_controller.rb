@@ -13,7 +13,7 @@ class TasksController < ApplicationController
       billable:        params[:billable],
       sort:            params[:sort],
       direction:       params[:direction]
-    )
+    ).select("tasks.*, COALESCE((SELECT SUM(hours) FROM time_entries WHERE time_entries.task_id = tasks.id), 0) AS total_hours")
     @customers     = Customer.order(:name)
     @project_codes = ProjectCode.active.ordered
   end

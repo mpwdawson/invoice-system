@@ -60,6 +60,7 @@
         <th class="pb-2 font-medium hidden sm:table-cell"><%= sort_link("Customer", "customer", request.query_parameters) %></th>
         <th class="pb-2 font-medium hidden sm:table-cell"><%= sort_link("Project Code", "project_code", request.query_parameters) %></th>
         <th class="pb-2 font-medium hidden sm:table-cell">Billable</th>
+        <th class="pb-2 font-medium hidden sm:table-cell">Hours</th>
         <th class="pb-2 font-medium hidden sm:table-cell"><%= sort_link("Created", "created_at", request.query_parameters) %></th>
         <th class="pb-2"></th>
       </tr>
@@ -81,6 +82,13 @@
               <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-500 text-xs rounded-full">Non-billable</span>
             <% end %>
           </td>
+          <td class="py-1 text-slate-600 dark:text-slate-400 hidden sm:table-cell">
+            <% if task.total_hours > 0 %>
+              <%= task.total_hours %>h
+            <% else %>
+              <span class="text-slate-400">—</span>
+            <% end %>
+          </td>
           <td class="py-1 text-xs text-slate-500 dark:text-slate-400 hidden sm:table-cell">
             <%= task.created_at.in_time_zone(current_timezone).strftime("%-d %b %Y") %>
           </td>
@@ -96,7 +104,7 @@
       <% end %>
       <% if @tasks.empty? %>
         <tr>
-          <td colspan="6" class="py-4 text-center text-slate-400">No tasks found.</td>
+          <td colspan="7" class="py-4 text-center text-slate-400">No tasks found.</td>
         </tr>
       <% end %>
     </tbody>
