@@ -21,9 +21,12 @@
     </div>
     <div>
       <%= f.label :project_code_id, "Project Code", class: "block text-xs font-medium mb-1" %>
-      <%= f.collection_select :project_code_id, @project_codes, :id,
-          ->(pc) { "#{pc.code} — #{pc.description}" },
-          { include_blank: "All codes", selected: params[:project_code_id] },
+      <%= f.select :project_code_id,
+          options_for_select(
+            [["Unassigned", "none"]] + @project_codes.map { |pc| ["#{pc.code} — #{pc.description}", pc.id] },
+            params[:project_code_id]
+          ),
+          { include_blank: "All codes" },
           { class: "border rounded px-3 py-2 text-sm", data: { action: "change->search-form#submit" } } %>
     </div>
     <div>

@@ -556,5 +556,6 @@ B-00 rails new (OS setup, Ruby, gems)
 | M-05 | —   | ProjectCodes | Medium | ✓ Done — bulk task assignment panel on ProjectCode show page |
 | M-06 | —   | ProjectCodes | Small | ✓ Done — task count column + headers on overview page |
 | M-07 | —   | Nav | Small | ✓ Done — Import sidebar link; wider textarea on import page; nav reordered to workflow order |
+| M-08 | —   | Tasks | Small | ✓ Done — "Unassigned" option on the Project Code filter |
 
-**33 chunks total.** S-05 merged into S-04. S-10/PDF, S-11/Docker, S-12/Backup deferred.
+**34 chunks total.** S-05 merged into S-04. S-10/PDF, S-11/Docker, S-12/Backup deferred.

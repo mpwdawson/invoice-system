@@ -119,6 +119,18 @@ describe Tasks::SearchQuery do
     end
   end
 
+  context 'with project_code_id: "none"' do
+    let(:project_code) { create(:project_code, customer: customer) }
+    let!(:task_with_code)    { create(:task, customer: customer, project_code: project_code) }
+    let!(:task_without_code) { create(:task, customer: customer) }
+    let(:project_code_id) { 'none' }
+
+    it 'returns only tasks with no project code' do
+      expect(subject).to include(task_without_code)
+      expect(subject).not_to include(task_with_code)
+    end
+  end
+
   context 'with date_from filter' do
     let!(:old_task)   { create(:task, customer: customer) }
     let!(:new_task)   { create(:task, customer: customer) }

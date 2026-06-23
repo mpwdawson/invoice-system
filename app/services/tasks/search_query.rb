@@ -30,7 +30,14 @@ module Tasks
     def call
       scope = Task.includes(:customer, :project_code, :ticket_references)
       scope = scope.where(customer_id:)     if customer_id.present?
-      scope = scope.where(project_code_id:) if project_code_id.present?
+      scope =
+        if project_code_id == 'none'
+          scope.where(project_code_id: nil)
+        elsif project_code_id.present?
+          scope.where(project_code_id:)
+        else
+          scope
+        end
       scope = scope.where(status: status.presence || 'active')
       scope = scope.where(billable: true)   if billable.present?
       scope = scope.where('tasks.created_at >= ?', parsed_date_from.beginning_of_day) if parsed_date_from
