@@ -5,13 +5,25 @@
        data-tasks--inline-edit-url-value="<%= update_inline_task_path(entry.task) %>"
        data-tasks--inline-edit-model-value="task"
        data-tasks--inline-edit-field-value="title"
-       class="flex-1 min-w-0">
+       class="flex-1 min-w-0 group flex items-center gap-1">
+    <%= link_to entry.task.title, task_path(entry.task),
+        class: "text-sm font-medium hover:underline truncate",
+        data: { tasks__inline_edit_target: "link", turbo_frame: "_top" } %>
+    <button type="button"
+            data-tasks--inline-edit-target="editButton"
+            data-action="tasks--inline-edit#edit"
+            class="hidden group-hover:inline-flex shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+            title="Edit title">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5">
+        <path d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L3.05 10.476a.75.75 0 0 0-.188.354l-.7 2.8a.5.5 0 0 0 .607.607l2.8-.7a.75.75 0 0 0 .354-.188l7.963-7.963a1.75 1.75 0 0 0 0-2.475l-.398-.398ZM11.72 3.22a.25.25 0 0 1 .354 0l.398.398a.25.25 0 0 1 0 .354L5.13 11.314l-1.452.363.363-1.452L11.72 3.22Z"/>
+      </svg>
+    </button>
     <input type="text"
            value="<%= entry.task.title %>"
            tabindex="-1"
            data-tasks--inline-edit-target="input"
-           data-action="input->tasks--inline-edit#schedule keydown.esc->tasks--inline-edit#cancel"
-           class="w-full bg-transparent text-sm font-medium border border-transparent rounded px-1 -mx-1 hover:border-slate-200 focus:border-slate-300 focus:outline-none dark:hover:border-slate-600 dark:focus:border-slate-500">
+           data-action="keydown.enter->tasks--inline-edit#save keydown.esc->tasks--inline-edit#cancel blur->tasks--inline-edit#blur"
+           class="hidden w-full bg-transparent text-sm font-medium border border-slate-300 rounded px-1 -mx-1 focus:border-slate-400 focus:outline-none dark:border-slate-500 dark:focus:border-slate-400">
   </div>
   <% if entry.task.project_code %>
     <span class="hidden sm:inline font-mono text-xs text-slate-400"><%= entry.task.project_code.code %></span>

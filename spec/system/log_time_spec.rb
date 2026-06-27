@@ -17,6 +17,21 @@ describe 'Log Time' do
         expect(page).to have_no_link(href: edit_time_entry_path(entry))
       end
     end
+
+    it 'shows task title as a link to the task page' do
+      visit root_path
+      within("turbo-frame#time_entry_#{entry.id}") do
+        expect(page).to have_link(task.title, href: task_path(task))
+      end
+    end
+
+    it 'reveals the title input when the edit icon is clicked' do
+      visit root_path
+      row = find("turbo-frame#time_entry_#{entry.id}")
+      row.hover
+      row.find('[data-tasks--inline-edit-target="editButton"]').click
+      expect(row).to have_css("input[data-tasks--inline-edit-target='input']:not(.hidden)")
+    end
   end
 
   describe '+ Add entry button' do
@@ -50,18 +65,18 @@ describe 'Log Time' do
     it 'shows all entries by default, filters to one customer, then shows all again on All' do
       visit root_path
 
-      expect(page).to have_selector("input[value='Acme Task']")
-      expect(page).to have_selector("input[value='Globex Task']")
+      expect(page).to have_link('Acme Task')
+      expect(page).to have_link('Globex Task')
 
       click_link 'Acme Corp'
 
-      expect(page).to have_selector("input[value='Acme Task']")
-      expect(page).to have_no_selector("input[value='Globex Task']")
+      expect(page).to have_link('Acme Task')
+      expect(page).to have_no_link('Globex Task')
 
       click_link 'All'
 
-      expect(page).to have_selector("input[value='Acme Task']")
-      expect(page).to have_selector("input[value='Globex Task']")
+      expect(page).to have_link('Acme Task')
+      expect(page).to have_link('Globex Task')
     end
   end
 end
