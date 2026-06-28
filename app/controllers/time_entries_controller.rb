@@ -10,7 +10,7 @@ class TimeEntriesController < ApplicationController
     @time_entry = TimeEntry.find(params.expect(:id))
     if @time_entry.update(inline_time_entry_params)
       @customer_id = session[:log_customer_id]
-      @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
+      @log_entries = recent_log_entries
     else
       head :unprocessable_content
     end
@@ -29,11 +29,11 @@ class TimeEntriesController < ApplicationController
       hours: params.dig(:time_entry, :hours).to_d
     )
     @date        = params.dig(:time_entry, :date)
-    @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
+    @log_entries = recent_log_entries
   rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid => e
     @error       = e.try(:record)&.errors&.full_messages&.first || e.message
     @date        = params.dig(:time_entry, :date)
-    @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
+    @log_entries = recent_log_entries
     render :log, formats: [:html], status: :unprocessable_content
   end
 
@@ -41,7 +41,7 @@ class TimeEntriesController < ApplicationController
     @customer_id = session[:log_customer_id]
     @time_entry  = TimeEntry.find(params.expect(:id))
     if @time_entry.update(time_entry_params)
-      @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
+      @log_entries = recent_log_entries
     else
       render :edit, formats: [:html], status: :unprocessable_content
     end
@@ -61,7 +61,7 @@ class TimeEntriesController < ApplicationController
         return
       end
 
-      @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
+      @log_entries = recent_log_entries
     end
   end
 
@@ -98,7 +98,7 @@ class TimeEntriesController < ApplicationController
     @customer_id = session[:log_customer_id]
     @customers   = Customer.order(:name)
     @date        = params[:date].presence || user_date.to_s
-    @log_entries = TimeEntries::RecentLogQuery.call(days: 14, customer_id: @customer_id, today: user_date)
+    @log_entries = recent_log_entries
   end
 
   # GET /time_entries/preview — Turbo Frame running-total panel, updated on field change
@@ -117,6 +117,12 @@ class TimeEntriesController < ApplicationController
   end
 
   private
+
+  LOG_WINDOW_DAYS = 35
+
+  def recent_log_entries
+    TimeEntries::RecentLogQuery.call(days: LOG_WINDOW_DAYS, customer_id: @customer_id, today: user_date)
+  end
 
   def time_entry_params
     params.expect(time_entry: %i[hours date])
