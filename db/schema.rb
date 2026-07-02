@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_175802) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_29_153459) do
   create_table "contractor_profiles", force: :cascade do |t|
     t.text "address"
     t.text "bank_details"
     t.datetime "created_at", null: false
     t.string "email"
     t.string "name"
+    t.string "phone"
     t.string "tax_number"
     t.string "timezone", default: "UTC", null: false
     t.datetime "updated_at", null: false
@@ -36,6 +37,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_175802) do
     t.string "contact_email"
     t.string "contact_name"
     t.datetime "created_at", null: false
+    t.string "currency", default: "USD", null: false
     t.string "invoice_prefix"
     t.string "name", null: false
     t.boolean "requires_project_codes", default: false, null: false
@@ -45,11 +47,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_175802) do
   create_table "invoice_lines", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description", null: false
+    t.string "header"
     t.integer "invoice_id", null: false
     t.integer "sort_order", default: 0, null: false
-    t.json "task_ids"
+    t.integer "task_id"
     t.datetime "updated_at", null: false
     t.index ["invoice_id"], name: "index_invoice_lines_on_invoice_id"
+    t.index ["task_id"], name: "index_invoice_lines_on_task_id"
   end
 
   create_table "invoices", force: :cascade do |t|
@@ -59,6 +63,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_175802) do
     t.datetime "paid_at"
     t.date "period_end"
     t.date "period_start"
+    t.string "po_number"
     t.decimal "rate", precision: 10, scale: 2
     t.datetime "sent_at"
     t.integer "sequence_number", null: false
@@ -122,6 +127,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_175802) do
 
   add_foreign_key "customer_rates", "customers"
   add_foreign_key "invoice_lines", "invoices"
+  add_foreign_key "invoice_lines", "tasks"
   add_foreign_key "invoices", "customers"
   add_foreign_key "project_codes", "customers"
   add_foreign_key "tasks", "customers"
