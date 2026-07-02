@@ -14,4 +14,5 @@ class InvoiceLine < ApplicationRecord
 
   def expense? = line_type == "expense"
   def line_total = (quantity || BigDecimal("0")) * (unit_price || BigDecimal("0"))
+  def display_quantity = quantity&.positive? ? quantity : nil
 end

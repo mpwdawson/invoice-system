@@ -46,6 +46,30 @@ describe Invoice do
     end
   end
 
+  describe '#period_label' do
+    it 'formats the date range' do
+      invoice = build_stubbed(:invoice, period_start: Date.new(2026, 6, 1), period_end: Date.new(2026, 6, 30))
+      expect(invoice.period_label).to eq("June 1 to June 30, 2026")
+    end
+
+    it 'returns empty string when dates are nil' do
+      invoice = build_stubbed(:invoice, period_start: nil, period_end: nil)
+      expect(invoice.period_label).to eq("")
+    end
+  end
+
+  describe '#invoice_date' do
+    it 'uses period_end when present' do
+      invoice = build_stubbed(:invoice, period_end: Date.new(2026, 6, 30))
+      expect(invoice.invoice_date).to eq("June 30, 2026")
+    end
+
+    it 'falls back to created_at' do
+      invoice = build_stubbed(:invoice, period_end: nil, created_at: Time.new(2026, 7, 1))
+      expect(invoice.invoice_date).to eq("July 1, 2026")
+    end
+  end
+
   describe '.next_sequence_number' do
     it 'returns the seed value when no invoices exist' do
       expect(described_class.next_sequence_number).to eq(316)

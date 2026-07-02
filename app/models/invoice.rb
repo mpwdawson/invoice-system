@@ -28,6 +28,15 @@ class Invoice < ApplicationRecord
     (total_hours || BigDecimal("0")) * (rate || BigDecimal("0"))
   end
 
+  def period_label
+    return "" unless period_start && period_end
+    "#{period_start.strftime('%B %-d')} to #{period_end.strftime('%B %-d, %Y')}"
+  end
+
+  def invoice_date
+    (period_end || created_at)&.strftime("%B %-d, %Y")
+  end
+
   def invoice_number
     padded = sequence_number.to_s.rjust(4, '0')
     customer&.invoice_prefix.present? ? "#{customer.invoice_prefix}-#{padded}" : padded

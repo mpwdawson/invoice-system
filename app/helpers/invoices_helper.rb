@@ -12,4 +12,8 @@ module InvoicesHelper
     tag.span status.capitalize,
              class: "px-2 py-0.5 text-xs rounded-full #{STATUS_BADGE_CLASSES.fetch(status)}"
   end
+
+  def alternating_row_class(index)
+    index.odd? ? "bg-slate-200" : ""
+  end
 end

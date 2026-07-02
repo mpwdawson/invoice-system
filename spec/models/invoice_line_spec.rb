@@ -56,6 +56,23 @@ describe InvoiceLine do
     end
   end
 
+  describe '#display_quantity' do
+    it 'returns quantity when positive' do
+      line = build(:invoice_line, quantity: 4.0)
+      expect(line.display_quantity).to eq(4.0)
+    end
+
+    it 'returns nil when quantity is zero' do
+      line = build(:invoice_line, quantity: 0)
+      expect(line.display_quantity).to be_nil
+    end
+
+    it 'returns nil when quantity is nil' do
+      line = build(:invoice_line, quantity: nil)
+      expect(line.display_quantity).to be_nil
+    end
+  end
+
   describe '#line_total' do
     it 'returns quantity * unit_price' do
       line = build(:invoice_line, :expense, quantity: 2, unit_price: 25.00)
