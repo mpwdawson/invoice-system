@@ -1,3 +1,3 @@
 <%= turbo_frame_tag 'invoice-lines' do %>
-  <%= render 'invoices/lines/list', invoice: @invoice, lines: @lines, new_line: @new_line, available_tasks: @available_tasks %>
+  <%= render 'invoices/lines/list', invoice: @invoice, lines: @lines, new_line: @new_line %>
 <% end %>

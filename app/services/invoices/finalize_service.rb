@@ -15,8 +15,6 @@ module Invoices
     end
 
     def call
-      return Result.new(invoice:, errors: [missing_project_codes_message]) if blocked_by_missing_project_codes?
-
       ActiveRecord::Base.transaction do
         hours = billable_entries.sum(:hours)
         billable_entries.find_each { |entry| entry.update!(invoice_id: invoice.id) }
@@ -33,15 +31,6 @@ module Invoices
       TimeEntry.joins(:task)
         .where(tasks: { customer: invoice.customer, billable: true })
         .where(date: invoice.period_start..invoice.period_end, invoice_id: nil)
-    end
-
-    def blocked_by_missing_project_codes?
-      invoice.customer.requires_project_codes? &&
-        Task.exists?(id: billable_entries.select(:task_id), project_code_id: nil)
-    end
-
-    def missing_project_codes_message
-      'All billable tasks in this period need a project code before the invoice can be finalized.'
     end
   end
 end

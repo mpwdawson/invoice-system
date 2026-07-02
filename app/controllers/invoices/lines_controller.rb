@@ -5,8 +5,7 @@ module Invoices
     before_action :set_invoice
     before_action :set_line, only: [:update, :destroy]
 
-    # GET /invoices/:invoice_id/lines — lazy-loaded by the wizard's Step 3 frame, so
-    # its forms parse in their own document and aren't swallowed by the wizard's form
+    # GET /invoices/:invoice_id/lines — lazy-loaded by the wizard's Step 3 frame
     def index
       render_lines
     end
@@ -39,7 +38,6 @@ module Invoices
     def render_lines
       @lines = @invoice.invoice_lines.reload
       @new_line = InvoiceLine.new(invoice: @invoice)
-      @available_tasks = available_tasks
       render :index, formats: [:html]
     end
 
@@ -56,11 +54,7 @@ module Invoices
     end
 
     def line_params
-      params.expect(invoice_line: [:description, { task_ids: [] }])
-    end
-
-    def available_tasks
-      @invoice.customer.tasks.billable.ordered
+      params.expect(invoice_line: [:description, :task_id, :header])
     end
   end
 end

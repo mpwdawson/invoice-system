@@ -64,6 +64,66 @@ describe Invoices::WizardController do
       end
     end
 
+    context 'when submitting step 3 task selections' do
+      subject { patch invoice_wizard_step_path(invoice, step: 4), params: params }
+
+      let(:customer) { create(:customer) }
+      let(:invoice)  { create(:invoice, customer:, wizard_current_step: 3, period_start: '2026-06-01', period_end: '2026-06-30') }
+      let(:task_a)   { create(:task, customer:, title: 'Design Work') }
+      let(:task_b)   { create(:task, customer:, title: 'Bug Fixes') }
+
+      before do
+        create(:time_entry, task: task_a, date: Date.new(2026, 6, 5), hours: 3.0)
+        create(:time_entry, task: task_b, date: Date.new(2026, 6, 10), hours: 2.0)
+      end
+
+      let(:params) { { selected_tasks: { task_a.id.to_s => 'Design Platform Features', task_b.id.to_s => '' } } }
+
+      it 'creates invoice lines and skips project codes step when not required' do
+        expect { subject }.to change(invoice.invoice_lines, :count).by(2)
+
+        lines = invoice.invoice_lines.reload.order(:sort_order)
+        expect(lines.first.task_id).to eq(task_a.id)
+        expect(lines.first.description).to eq('Design Platform Features')
+        expect(lines.second.task_id).to eq(task_b.id)
+        expect(lines.second.description).to eq('Bug Fixes')
+        expect(response).to redirect_to(invoice_wizard_step_path(invoice, step: 5))
+      end
+
+      it 'saves invoice_name back to the task' do
+        subject
+
+        expect(task_a.reload.invoice_name).to eq('Design Platform Features')
+      end
+
+      it 'deletes lines for unchecked tasks on re-submission' do
+        create(:invoice_line, invoice:, task: task_a, description: 'Old')
+        create(:invoice_line, invoice:, task: task_b, description: 'Old')
+
+        patch invoice_wizard_step_path(invoice, step: 4),
+              params: { selected_tasks: { task_a.id.to_s => 'Design Platform Features' } }
+
+        expect(invoice.invoice_lines.reload.pluck(:task_id)).to eq([task_a.id])
+      end
+    end
+
+    context 'when submitting step 3 for a customer requiring project codes' do
+      subject { patch invoice_wizard_step_path(invoice, step: 4), params: params }
+
+      let(:customer) { create(:customer, requires_project_codes: true) }
+      let(:invoice)  { create(:invoice, customer:, wizard_current_step: 3, period_start: '2026-06-01', period_end: '2026-06-30') }
+      let(:task)     { create(:task, customer:, title: 'Design Work', project_code: nil) }
+      let(:params)   { { selected_tasks: { task.id.to_s => 'Design Platform Features' } } }
+
+      before { create(:time_entry, task:, date: Date.new(2026, 6, 5), hours: 3.0) }
+
+      it 'stops at the project codes step' do
+        subject
+
+        expect(response).to redirect_to(invoice_wizard_step_path(invoice, step: 4))
+      end
+    end
+
     context 'when submitting step 1 invoice fields' do
       subject { patch invoice_wizard_step_path(invoice, step: 1), params: params }
 

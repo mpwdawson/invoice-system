@@ -15,11 +15,18 @@
       Finalized — ready to send.
     </p>
 
-    <div class="text-sm space-y-1">
+    <div class="text-sm space-y-1 mb-6">
       <p>Invoice number: <span class="font-medium text-slate-900 dark:text-white"><%= @invoice.invoice_number %></span></p>
       <p>Total hours: <span class="font-medium text-slate-900 dark:text-white tabular-nums"><%= @invoice.total_hours %>h</span></p>
       <p>Total amount: <span class="font-medium text-slate-900 dark:text-white tabular-nums">$<%= number_with_precision(@invoice.total_amount, precision: 2) %></span></p>
       <p>Status: <span class="font-medium text-slate-900 dark:text-white"><%= @invoice.status %></span></p>
+    </div>
+
+    <div class="flex gap-3">
+      <%= link_to 'Print / Save PDF', print_invoice_path(@invoice), target: "_blank",
+            class: 'px-3 py-1.5 text-sm rounded bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900' %>
+      <%= link_to 'View Invoice', invoice_path(@invoice),
+            class: 'px-3 py-1.5 text-sm rounded border dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' %>
     </div>
   <% end %>
 </div>

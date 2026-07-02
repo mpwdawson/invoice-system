@@ -9,13 +9,8 @@
   <div data-disclosure-target="trigger" class="flex items-start justify-between gap-3 cursor-move">
     <div>
       <p class="text-sm text-slate-900 dark:text-white"><%= line.description %></p>
-      <% selected_tasks = available_tasks.select { |task| Array(line.task_ids).include?(task.id) } %>
-      <% if selected_tasks.any? %>
-        <div class="flex flex-wrap gap-1 mt-1">
-          <% selected_tasks.each do |task| %>
-            <span class="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400"><%= task.title %></span>
-          <% end %>
-        </div>
+      <% if line.task %>
+        <span class="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400 mt-1 inline-block"><%= line.task.title %></span>
       <% end %>
     </div>
     <div class="flex items-center gap-3 shrink-0">
@@ -30,7 +25,7 @@
 
   <div data-disclosure-target="content" hidden class="mt-3">
     <%= form_with model: line, url: invoice_line_path(invoice, line), method: :patch do |f| %>
-      <%= render 'invoices/lines/line_fields', f: f, available_tasks: available_tasks %>
+      <%= render 'invoices/lines/line_fields', f: f %>
       <div class="flex items-center gap-2 mt-2">
         <%= f.submit 'Save', class: 'px-3 py-1 text-sm rounded bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900' %>
         <button type="button" data-action="disclosure#conceal" class="text-sm text-slate-500 hover:underline">Cancel</button>

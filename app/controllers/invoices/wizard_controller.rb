@@ -4,7 +4,7 @@ module Invoices
   class WizardController < ApplicationController
     STEPS = (1..6)
     STEP_TITLES = ['Customer + Date Range', 'Review Entries', 'Craft Lines',
-                   'Generate Descriptions', 'Preview', 'Finalize'].freeze
+                   'Project Codes', 'Preview', 'Finalize'].freeze
 
     before_action :set_invoice, only: [:show, :update, :finalize]
     before_action :set_step,    only: [:show, :update]
@@ -14,7 +14,8 @@ module Invoices
       case @step
       when 1 then @customers = Customer.order(:name)
       when 2 then @entries_result = unbilled_entries_result
-      when 3 then set_lines_data
+      when 3 then set_craft_lines_data
+      when 4 then set_project_codes_data
       when 5 then set_preview_data
       end
     end
@@ -37,16 +38,28 @@ module Invoices
 
     # PATCH /invoices/:invoice_id/wizard/:step — advance to the given step
     def update
-      @invoice.assign_attributes(invoice_params)
+      if @step == 4 && params[:selected_tasks].present?
+        sync_lines_from_selection
+      else
+        @invoice.assign_attributes(invoice_params)
+      end
+
       @invoice.wizard_current_step = [@invoice.wizard_current_step.to_i, @step].max
       @invoice.save!
-      redirect_to invoice_wizard_step_path(@invoice, step: @step)
+
+      target_step = @step
+      if target_step == 4 && skip_project_codes?
+        target_step = 5
+        @invoice.update_column(:wizard_current_step, [@invoice.wizard_current_step, 5].max)
+      end
+
+      redirect_to invoice_wizard_step_path(@invoice, step: target_step)
     end
 
     private
 
     def invoice_params
-      params.fetch(:invoice, {}).permit(:customer_id, :period_start, :period_end)
+      params.fetch(:invoice, {}).permit(:customer_id, :period_start, :period_end, :po_number)
     end
 
     def unbilled_entries_result
@@ -56,8 +69,31 @@ module Invoices
                                           to: @invoice.period_end)
     end
 
-    def set_lines_data
-      @available_tasks = @invoice.customer.tasks.billable.ordered if @invoice.customer
+    def set_craft_lines_data
+      return unless @invoice.customer && @invoice.period_start && @invoice.period_end
+
+      @sort = params[:sort].presence || "title_asc"
+      @period_tasks = Invoices::PeriodTasksQuery.call(
+        customer: @invoice.customer, from: @invoice.period_start, to: @invoice.period_end,
+        sort: @sort
+      )
+      @sort_key, @sort_dir = @sort.match(/\A(title|hours|date)_(asc|desc)\z/)&.captures || ["title", "asc"]
+      @existing_line_task_ids = @invoice.invoice_lines.where.not(task_id: nil).pluck(:task_id)
+    end
+
+    def set_project_codes_data
+      return redirect_to invoice_wizard_step_path(@invoice, step: 5) if skip_project_codes?
+
+      line_task_ids = @invoice.invoice_lines.where.not(task_id: nil).pluck(:task_id)
+      tasks = Task.includes(:project_code).where(id: line_task_ids).order(:title)
+      @tasks_missing_codes = tasks.select { |task| task.project_code_id.nil? }
+      @tasks_with_codes = tasks.select { |task| task.project_code_id.present? }
+      @task_hours = TimeEntry.where(task_id: line_task_ids, date: @invoice.period_start..@invoice.period_end, invoice_id: nil)
+                             .group(:task_id).sum(:hours)
+    end
+
+    def skip_project_codes?
+      !@invoice.customer&.requires_project_codes?
     end
 
     def set_preview_data
@@ -66,6 +102,32 @@ module Invoices
 
       @project_summary = Invoices::ProjectSummaryQuery.call(customer: @invoice.customer,
                                                             from: @invoice.period_start, to: @invoice.period_end)
+    end
+
+    # Sync invoice_lines based on step 3 checkbox selections
+    def sync_lines_from_selection
+      selected = params[:selected_tasks] || {}
+      selected_task_ids = selected.keys.map(&:to_i)
+
+      # Delete lines for unchecked tasks
+      @invoice.invoice_lines.where.not(task_id: selected_task_ids).where.not(task_id: nil).destroy_all
+
+      # Create or update lines for checked tasks
+      next_sort = (@invoice.invoice_lines.maximum(:sort_order) || -1) + 1
+      selected.each do |task_id, invoice_name|
+        task = Task.find(task_id.to_i)
+        name = invoice_name.presence || task.invoice_name.presence || task.title
+
+        task.update!(invoice_name: name) if name != task.invoice_name
+
+        existing_line = @invoice.invoice_lines.find_by(task_id: task.id)
+        if existing_line
+          existing_line.update!(description: name)
+        else
+          @invoice.invoice_lines.create!(task_id: task.id, description: name, sort_order: next_sort)
+          next_sort += 1
+        end
+      end
     end
 
     def set_invoice

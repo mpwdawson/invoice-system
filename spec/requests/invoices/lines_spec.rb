@@ -12,7 +12,7 @@ describe Invoices::LinesController do
   describe 'POST #create' do
     subject { post invoice_lines_path(invoice), params: params }
 
-    let(:params) { { invoice_line: { description: 'Worked on rewards dashboard', task_ids: [task.id.to_s] } } }
+    let(:params) { { invoice_line: { description: 'Worked on rewards dashboard', task_id: task.id } } }
 
     it 'creates a line on the invoice with the next sort order' do
       create(:invoice_line, invoice:, sort_order: 0)
@@ -21,10 +21,10 @@ describe Invoices::LinesController do
       expect(invoice.invoice_lines.order(:sort_order).last.sort_order).to eq(1)
     end
 
-    it 'normalizes task_ids to an integer array' do
+    it 'associates the line with the task' do
       subject
 
-      expect(invoice.invoice_lines.last.task_ids).to eq([task.id])
+      expect(invoice.invoice_lines.last.task_id).to eq(task.id)
     end
 
     it 'returns an html response with the invoice-lines turbo frame' do
@@ -38,15 +38,15 @@ describe Invoices::LinesController do
   describe 'PATCH #update' do
     subject { patch invoice_line_path(invoice, line), params: params }
 
-    let(:line)   { create(:invoice_line, invoice:, description: 'Old description', task_ids: []) }
-    let(:params) { { invoice_line: { description: 'New description', task_ids: [task.id.to_s] } } }
+    let(:line)   { create(:invoice_line, invoice:, description: 'Old description') }
+    let(:params) { { invoice_line: { description: 'New description', task_id: task.id } } }
 
-    it 'updates the description and task_ids' do
+    it 'updates the description and task' do
       subject
 
       line.reload
       expect(line.description).to eq('New description')
-      expect(line.task_ids).to eq([task.id])
+      expect(line.task_id).to eq(task.id)
     end
   end
 

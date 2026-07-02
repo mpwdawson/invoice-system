@@ -18,6 +18,11 @@
       <%= form.date_field :period_end,
             class: 'rounded border px-2 py-1.5 text-sm dark:bg-slate-800 dark:border-slate-600' %>
     </div>
+    <div>
+      <label class="block text-xs text-slate-500 mb-1">PO Number</label>
+      <%= form.text_field :po_number, placeholder: "optional",
+            class: 'rounded border px-2 py-1.5 text-sm dark:bg-slate-800 dark:border-slate-600' %>
+    </div>
   </div>
 
   <p class="text-sm text-slate-500 mt-4">

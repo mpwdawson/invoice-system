@@ -1,13 +1,68 @@
-<div>
-  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-4">Step 3 — Craft Lines</h2>
+<div data-controller="craft-lines">
+  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-2">Step 3 — Craft Lines</h2>
+  <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+    Select tasks to include on the invoice. Edit the invoice name for each — this is what the client sees.
+  </p>
 
-  <% if @available_tasks.nil? %>
-    <p class="text-sm text-slate-400">Pick a customer and date range in Step 1 first.</p>
+  <%# TODO: "Suggest names" button — LLM fills blank invoice_name fields for checked tasks %>
+
+  <% if @period_tasks.nil? || @period_tasks.empty? %>
+    <p class="text-sm text-slate-400">No billable tasks with unbilled hours found in this period. Check your date range in Step 1.</p>
   <% else %>
-    <%# Lazy-loaded: its forms must parse in their own document, not the wizard's
-        wrapping @invoice form, or the browser flattens them into one form %>
-    <%= turbo_frame_tag 'invoice-lines', src: invoice_lines_path(@invoice), loading: :lazy do %>
-      <p class="text-sm text-slate-400">Loading…</p>
-    <% end %>
+    <table class="w-full text-sm">
+      <thead>
+        <%
+          sort_link = ->(col, default_dir, label, align: "text-left") {
+            if @sort_key == col
+              next_dir = @sort_dir == "asc" ? "desc" : "asc"
+              arrow = @sort_dir == "asc" ? " ▲" : " ▼"
+            else
+              next_dir = default_dir
+              arrow = ""
+            end
+            link_to(invoice_wizard_step_path(@invoice, step: 3, sort: "#{col}_#{next_dir}"),
+                    class: "hover:text-slate-900 dark:hover:text-white #{align}") do
+              "#{label}#{arrow}".html_safe
+            end
+          }
+        %>
+        <tr class="border-b dark:border-slate-700 text-left text-xs text-slate-500">
+          <th class="pb-2 w-8"></th>
+          <th class="pb-2 font-medium w-1/4"><%= sort_link.("title", "asc", "Task") %></th>
+          <th class="pb-2 font-medium">Invoice Name</th>
+          <th class="pb-2 font-medium text-right w-20"><%= sort_link.("hours", "desc", "Hours") %></th>
+          <th class="pb-2 font-medium text-right w-24"><%= sort_link.("date", "desc", "Last Entry") %></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y dark:divide-slate-700">
+        <% @period_tasks.each do |task| %>
+          <% checked = @existing_line_task_ids.include?(task.id) %>
+          <% existing_line = @invoice.invoice_lines.find { |line| line.task_id == task.id } %>
+          <% display_name = existing_line&.description || task.invoice_name %>
+          <tr>
+            <td class="py-2 pr-3">
+              <input type="checkbox"
+                     <%= 'checked' if checked %>
+                     class="rounded"
+                     data-action="change->craft-lines#toggleRow">
+            </td>
+            <td class="py-2 pr-4">
+              <%= link_to task.title, task_path(task), target: "_blank",
+                    class: "text-xs text-slate-600 dark:text-slate-400 hover:underline hover:text-slate-900 dark:hover:text-slate-200" %>
+            </td>
+            <td class="py-2 pr-4">
+              <input type="text" name="selected_tasks[<%= task.id %>]"
+                     value="<%= display_name %>"
+                     placeholder="<%= task.title %>"
+                     class="w-full rounded border px-2 py-1 text-sm dark:bg-slate-800 dark:border-slate-600
+                            <%= 'opacity-50' unless checked %>"
+                     <%= 'disabled' unless checked %>>
+            </td>
+            <td class="py-2 text-right tabular-nums text-slate-600 dark:text-slate-400"><%= task.period_hours %>h</td>
+            <td class="py-2 text-right tabular-nums text-slate-600 dark:text-slate-400"><%= Date.parse(task.latest_date.to_s).strftime("%-d %b") if task.latest_date %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
   <% end %>
 </div>

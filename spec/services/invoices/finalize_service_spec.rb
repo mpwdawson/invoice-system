@@ -61,20 +61,6 @@ describe Invoices::FinalizeService do
     end
   end
 
-  context 'when the customer requires project codes and a billable task lacks one' do
-    let(:customer) { create(:customer, requires_project_codes: true) }
-    let(:task)     { create(:task, customer:, project_code: nil) }
-    let!(:entry)   { create(:time_entry, task:, date: Date.new(2026, 5, 10), hours: 4.0) }
-
-    it 'fails with a clear error and leaves the invoice and entries unchanged' do
-      expect(subject.success?).to be(false)
-      expect(subject.errors).to be_present
-
-      expect(invoice.reload.status).to eq('draft')
-      expect(entry.reload.invoice_id).to be_nil
-    end
-  end
-
   context 'when the customer does not require project codes and tasks are unassigned' do
     let(:task)   { create(:task, customer:, project_code: nil) }
     let!(:entry) { create(:time_entry, task:, date: Date.new(2026, 5, 10), hours: 4.0) }

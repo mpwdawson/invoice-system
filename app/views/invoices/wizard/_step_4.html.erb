@@ -1,16 +1,61 @@
-<div data-controller="disclosure">
-  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-2">Step 4 — Generate Descriptions</h2>
-  <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
-    Use the LLM to draft description text for each line from its linked tasks. You can review and edit every suggestion afterwards.
-  </p>
+<div>
+  <h2 class="text-base font-semibold text-slate-900 dark:text-white mb-2">Step 4 — Review Project Codes</h2>
 
-  <button type="button" data-disclosure-target="trigger" data-action="disclosure#reveal"
-          class="px-3 py-1.5 text-sm rounded bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900">
-    Generate descriptions
-  </button>
+  <% if @tasks_missing_codes.any? %>
+    <div class="p-3 rounded border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950 mb-4">
+      <p class="text-sm text-amber-800 dark:text-amber-200">
+        <%= @tasks_missing_codes.size %> <%= @tasks_missing_codes.size == 1 ? 'task has' : 'tasks have' %> no project code assigned.
+        You can fix them now or continue without — the invoice will still finalize.
+      </p>
+    </div>
 
-  <p data-disclosure-target="content" hidden
-     class="text-sm text-amber-600 mt-3 p-3 rounded border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950">
-    LLM not configured — write descriptions manually for now.
-  </p>
+    <table class="w-full text-sm mb-4">
+      <thead>
+        <tr class="border-b dark:border-slate-700 text-left text-xs text-slate-500">
+          <th class="pb-2 font-medium">Task</th>
+          <th class="pb-2 font-medium text-right w-20">Hours</th>
+          <th class="pb-2 font-medium text-right w-28">Project Code</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y dark:divide-slate-700">
+        <% @tasks_missing_codes.each do |task| %>
+          <tr>
+            <td class="py-2">
+              <%= link_to task.title, edit_task_path(task), target: "_blank",
+                    class: "text-sm text-blue-600 dark:text-blue-400 hover:underline" %>
+            </td>
+            <td class="py-2 text-right tabular-nums text-slate-600 dark:text-slate-400">
+              <%= @task_hours[task.id].to_d %>h
+            </td>
+            <td class="py-2 text-right">
+              <span class="text-xs text-amber-600 dark:text-amber-400">missing</span>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="text-sm text-emerald-600 dark:text-emerald-400 p-3 rounded border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950 mb-4">
+      All tasks have project codes assigned.
+    </p>
+  <% end %>
+
+  <% if @tasks_with_codes.any? %>
+    <details class="text-sm mb-4">
+      <summary class="text-slate-500 dark:text-slate-400 cursor-pointer hover:text-slate-700 dark:hover:text-slate-300">
+        <%= @tasks_with_codes.size %> <%= @tasks_with_codes.size == 1 ? 'task' : 'tasks' %> with codes assigned
+      </summary>
+      <table class="w-full text-sm mt-2">
+        <tbody class="divide-y dark:divide-slate-700">
+          <% @tasks_with_codes.each do |task| %>
+            <tr>
+              <td class="py-1.5 text-slate-600 dark:text-slate-400"><%= task.title %></td>
+              <td class="py-1.5 text-right tabular-nums text-slate-500 dark:text-slate-500"><%= @task_hours[task.id].to_d %>h</td>
+              <td class="py-1.5 text-right font-mono text-xs text-slate-500 dark:text-slate-500"><%= task.project_code&.code %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </details>
+  <% end %>
 </div>
