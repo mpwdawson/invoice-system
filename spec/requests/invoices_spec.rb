@@ -66,6 +66,58 @@ describe InvoicesController do
       end
     end
 
+    context 'with expense lines' do
+      let(:profile) { create(:contractor_profile) }
+      let(:invoice) do
+        create(:customer_rate, customer:, rate: 100.00, effective_from: Date.new(2026, 1, 1))
+        create(:invoice, customer:, status: 'ready', total_hours: 10.0,
+               total_amount: 1050.00,
+               period_start: Date.new(2026, 5, 1), period_end: Date.new(2026, 5, 31))
+      end
+
+      before do
+        profile
+        create(:invoice_line, invoice:, description: 'Dev work', line_type: 'task', quantity: 10.0, unit_price: 100.00)
+        create(:invoice_line, :expense, invoice:, description: 'Monthly internet - May 2026', quantity: 1, unit_price: 50.00)
+      end
+
+      it 'renders task lines, expense lines, and correct totals' do
+        subject
+
+        expect(response.body).to include('Dev work')
+        expect(response.body).to include('Monthly internet - May 2026')
+        expect(response.body).to include('$50.00')
+        expect(response.body).to include('Total Hours')
+        expect(response.body).to include('$1,000.00')
+        expect(response.body).to include('$1,050.00')
+      end
+    end
+
+    context 'with project code breakdown' do
+      let(:customer) { create(:customer, requires_project_codes: true) }
+      let(:profile)  { create(:contractor_profile) }
+      let(:project_code) { create(:project_code, customer:, code: 'PROJ-001', description: 'Platform Work') }
+      let(:task) { create(:task, customer:, project_code:) }
+      let(:invoice) do
+        create(:invoice, customer:, status: 'ready', total_hours: 4.0,
+               total_amount: 400.00, rate: 100.00)
+      end
+
+      before do
+        profile
+        create(:invoice_line, invoice:, task:, description: 'Platform dev')
+        create(:time_entry, task:, date: Date.new(2026, 5, 10), hours: 4.0, invoice:)
+      end
+
+      it 'renders the project code table on page 2' do
+        subject
+
+        expect(response.body).to include('Project Code Breakdown')
+        expect(response.body).to include('PROJ-001')
+        expect(response.body).to include('Platform Work')
+      end
+    end
+
     context 'for a draft invoice' do
       let(:invoice) { create(:invoice, customer:, status: 'draft') }
 

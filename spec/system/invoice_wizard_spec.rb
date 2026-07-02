@@ -60,6 +60,52 @@ describe 'Invoice Wizard' do
     expect(invoice.invoice_lines.first.description).to eq('Rewards Dashboard')
   end
 
+  it 'adds an expense line in step 3' do
+    invoice = create(:invoice, customer:, period_start: Date.new(2026, 5, 1),
+                               period_end: Date.new(2026, 5, 31), wizard_current_step: 3)
+
+    visit invoice_wizard_step_path(invoice, step: 3)
+
+    row = find('tr', text: 'Rewards Dashboard')
+    within(row) { check(match: :first) }
+
+    check 'expense[include]'
+    fill_in 'expense[unit_price]', with: '50'
+
+    click_on 'Next'
+
+    expect(invoice.invoice_lines.tasks.count).to eq(1)
+    expect(invoice.invoice_lines.expenses.count).to eq(1)
+
+    expense = invoice.invoice_lines.expenses.first
+    expect(expense.unit_price).to eq(50.00)
+    expect(expense.quantity).to eq(1)
+  end
+
+  it 'finalizes an invoice with an expense and verifies totals' do
+    invoice = create(:invoice, customer:, period_start: Date.new(2026, 5, 1),
+                               period_end: Date.new(2026, 5, 31), wizard_current_step: 5)
+    create(:invoice_line, invoice:, task:, description: 'Dashboard work')
+    create(:invoice_line, :expense, invoice:, description: 'Internet - May 2026', quantity: 1, unit_price: 50.00)
+
+    visit invoice_wizard_step_path(invoice, step: 5)
+    click_on 'Next'
+
+    accept_confirm do
+      click_on 'Finalize Invoice'
+    end
+
+    expect(page).to have_text('Finalized — ready to send')
+
+    reloaded = invoice.reload
+    expect(reloaded.total_hours).to eq(4.0)
+    expect(reloaded.total_amount).to eq(430.00)
+
+    task_line = reloaded.invoice_lines.tasks.first
+    expect(task_line.quantity).to eq(4.0)
+    expect(task_line.unit_price).to eq(95.00)
+  end
+
   it 'previews the invoice and finalizes it' do
     invoice = create(:invoice, customer:, period_start: Date.new(2026, 5, 1),
                                period_end: Date.new(2026, 5, 31), wizard_current_step: 5)
