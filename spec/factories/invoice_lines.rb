@@ -5,5 +5,12 @@ FactoryBot.define do
     invoice
     sequence(:description) { |n| "Line #{n}" }
     sequence(:sort_order)
+    line_type { "task" }
+
+    trait :expense do
+      line_type { "expense" }
+      quantity { 1 }
+      unit_price { 50.00 }
+    end
   end
 end

@@ -24,6 +24,10 @@ class Invoice < ApplicationRecord
     transaction { (maximum(:sequence_number) || (SEQUENCE_SEED - 1)) + 1 }
   end
 
+  def hours_subtotal
+    (total_hours || BigDecimal("0")) * (rate || BigDecimal("0"))
+  end
+
   def invoice_number
     padded = sequence_number.to_s.rjust(4, '0')
     customer&.invoice_prefix.present? ? "#{customer.invoice_prefix}-#{padded}" : padded

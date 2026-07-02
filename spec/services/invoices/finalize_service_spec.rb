@@ -37,6 +37,32 @@ describe Invoices::FinalizeService do
     end
   end
 
+  context 'with task lines' do
+    let(:task)   { create(:task, customer:) }
+    let!(:entry) { create(:time_entry, task:, date: Date.new(2026, 5, 10), hours: 4.0) }
+    let!(:line)  { create(:invoice_line, invoice:, task:, description: "Dev work") }
+
+    it 'snapshots quantity and unit_price on task lines' do
+      subject
+      line.reload
+      expect(line.quantity).to eq(4.0)
+      expect(line.unit_price).to eq(100.00)
+    end
+  end
+
+  context 'with expense lines' do
+    let(:task)   { create(:task, customer:) }
+    let!(:entry) { create(:time_entry, task:, date: Date.new(2026, 5, 10), hours: 4.0) }
+    let!(:expense_line) do
+      create(:invoice_line, :expense, invoice:, description: "Internet", quantity: 1, unit_price: 50.00)
+    end
+
+    it 'includes expense total in total_amount' do
+      subject
+      expect(invoice.reload.total_amount).to eq(450.00)
+    end
+  end
+
   context 'with entries outside the billable un-billed scope' do
     let(:task)                { create(:task, customer:) }
     let(:other_customer_task) { create(:task, customer: create(:customer)) }

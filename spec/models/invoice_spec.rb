@@ -34,6 +34,18 @@ describe Invoice do
     end
   end
 
+  describe '#hours_subtotal' do
+    it 'returns total_hours * rate' do
+      invoice = build_stubbed(:invoice, total_hours: 120, rate: 100.00)
+      expect(invoice.hours_subtotal).to eq(BigDecimal("12000"))
+    end
+
+    it 'returns 0 when total_hours or rate is nil' do
+      invoice = build_stubbed(:invoice, total_hours: nil, rate: nil)
+      expect(invoice.hours_subtotal).to eq(0)
+    end
+  end
+
   describe '.next_sequence_number' do
     it 'returns the seed value when no invoices exist' do
       expect(described_class.next_sequence_number).to eq(316)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_29_153459) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_02_040559) do
   create_table "contractor_profiles", force: :cascade do |t|
     t.text "address"
     t.text "bank_details"
@@ -49,8 +49,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_29_153459) do
     t.string "description", null: false
     t.string "header"
     t.integer "invoice_id", null: false
+    t.string "line_type", default: "task", null: false
+    t.decimal "quantity", precision: 8, scale: 2
     t.integer "sort_order", default: 0, null: false
     t.integer "task_id"
+    t.decimal "unit_price", precision: 10, scale: 2
     t.datetime "updated_at", null: false
     t.index ["invoice_id"], name: "index_invoice_lines_on_invoice_id"
     t.index ["task_id"], name: "index_invoice_lines_on_task_id"
