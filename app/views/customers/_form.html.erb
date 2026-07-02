@@ -29,6 +29,10 @@
       <%= f.label :address, class: "block text-sm font-medium mb-1" %>
       <%= f.text_area :address, rows: 3, class: "w-full border rounded px-3 py-2 text-sm" %>
     </div>
+    <div>
+      <%= f.label :currency, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :currency, class: "w-full border rounded px-3 py-2 text-sm", placeholder: "USD" %>
+    </div>
     <div class="flex items-center gap-2">
       <%= f.check_box :requires_project_codes, class: "rounded" %>
       <%= f.label :requires_project_codes, "Requires project codes on invoice", class: "text-sm" %>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Invoice" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <style>
+      @media print {
+        @page { size: letter; margin: 0.5in 0.75in; }
+        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .no-print { display: none !important; }
+        .page-break { page-break-before: always; }
+      }
+    </style>
+  </head>
+  <body class="bg-white text-slate-900 p-8 print:p-0">
+    <div class="no-print mb-6 flex gap-3">
+      <%= link_to "← Back to Invoice", request.referer || invoices_path,
+            class: "text-sm text-slate-500 hover:text-slate-700" %>
+      <button onclick="window.print()"
+              class="px-4 py-1.5 text-sm rounded bg-slate-800 text-white hover:bg-slate-700">
+        Print / Save PDF
+      </button>
+    </div>
+    <div class="max-w-[8.5in] mx-auto">
+      <%= yield %>
+    </div>
+  </body>
+</html>

@@ -38,6 +38,46 @@ describe InvoicesController do
     end
   end
 
+  describe 'GET #print' do
+    subject { get print_invoice_path(invoice) }
+
+    context 'for a finalized invoice' do
+      let(:profile) { create(:contractor_profile, phone: '555.123.4567') }
+      let(:invoice) do
+        create(:invoice, customer:, status: 'ready', total_hours: 10.0,
+               total_amount: 1000.00, rate: 100.00, po_number: 'PO-999')
+      end
+
+      before do
+        profile
+        create(:invoice_line, invoice:, description: 'January work')
+      end
+
+      it 'renders the print layout with invoice data' do
+        subject
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('555.123.4567')
+        expect(response.body).to include(invoice.invoice_number)
+        expect(response.body).to include('PO-999')
+        expect(response.body).to include('January work')
+        expect(response.body).to include('$1,000.00')
+        expect(response.body).not_to include('main-sidebar')
+      end
+    end
+
+    context 'for a draft invoice' do
+      let(:invoice) { create(:invoice, customer:, status: 'draft') }
+
+      it 'redirects with an alert' do
+        subject
+
+        expect(response).to redirect_to(invoice_path(invoice))
+        expect(flash[:alert]).to eq('Only finalized invoices can be printed.')
+      end
+    end
+  end
+
   describe 'PATCH #mark_sent' do
     subject { patch mark_sent_invoice_path(invoice) }
 

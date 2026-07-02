@@ -43,6 +43,6 @@ class CustomersController < ApplicationController
 
   def customer_params
     params.expect(customer: [:name, :address, :contact_name, :contact_email,
-                             :invoice_prefix, :requires_project_codes])
+                             :invoice_prefix, :currency, :requires_project_codes])
   end
 end

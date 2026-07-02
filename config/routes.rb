@@ -37,6 +37,7 @@ Rails.application.routes.draw do
 
   resources :invoices, only: [:index, :show] do
     member do
+      get   :print
       patch :mark_sent
       patch :mark_paid
     end

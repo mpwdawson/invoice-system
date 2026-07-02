@@ -5,7 +5,12 @@
       <%= @invoice.customer&.name %> — <%= @invoice.period_start %> – <%= @invoice.period_end %>
     </p>
   </div>
-  <%= invoice_status_badge(@invoice.status) %>
+  <div class="flex items-center gap-3">
+    <%= invoice_status_badge(@invoice.status) %>
+    <%= link_to "Print", print_invoice_path(@invoice),
+          target: "_blank",
+          class: "px-3 py-1.5 text-sm rounded border dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" %>
+  </div>
 </div>
 
 <% if @invoice.invoice_lines.any? %>

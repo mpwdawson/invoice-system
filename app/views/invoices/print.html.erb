@@ -1,0 +1,144 @@
+<% content_for(:title) { "Invoice #{@invoice.invoice_number}" } %>
+
+<%# ── PAGE 1: Header + Line Items + Totals ── %>
+
+<div class="flex items-center gap-3 mb-4">
+  <%= image_tag("logo.svg", class: "w-10 h-10") %>
+  <h1 class="text-5xl font-bold" style="color: #4A1525;"><%= @profile&.name %></h1>
+</div>
+
+<table class="text-xs mb-5">
+  <tbody>
+    <% if @profile&.phone.present? %>
+      <tr>
+        <td class="pr-4 font-bold py-0.5">Contact Number:</td>
+        <td class="py-0.5"><%= @profile.phone %></td>
+      </tr>
+    <% end %>
+    <% if @profile&.address.present? %>
+      <tr>
+        <td class="pr-4 font-bold py-0.5">Address:</td>
+        <td class="py-0.5"><%= @profile.address %></td>
+      </tr>
+    <% end %>
+    <% if @profile&.email.present? %>
+      <tr>
+        <td class="pr-4 font-bold py-0.5">Contact Email:</td>
+        <td class="py-0.5"><%= @profile.email %></td>
+      </tr>
+    <% end %>
+    <% if @profile&.tax_number.present? %>
+      <tr>
+        <td class="pr-4 font-bold py-0.5">GST Number:</td>
+        <td class="py-0.5"><%= @profile.tax_number %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<div class="flex justify-between items-end mb-4">
+  <h2 class="text-4xl text-slate-400">Invoice</h2>
+  <table class="border border-slate-400 text-xs">
+    <tr class="border-b border-slate-400">
+      <td class="px-3 py-1 font-bold">Invoice No.</td>
+      <td class="px-3 py-1 text-right tabular-nums"><%= @invoice.invoice_number %></td>
+    </tr>
+    <tr class="border-b border-slate-400">
+      <td class="px-3 py-1 font-bold">Date:</td>
+      <td class="px-3 py-1 text-right"><%= @invoice.period_end&.strftime("%B %-d, %Y") || @invoice.created_at.strftime("%B %-d, %Y") %></td>
+    </tr>
+    <% if @invoice.po_number.present? %>
+      <tr>
+        <td class="px-3 py-1 font-bold">PO Number:</td>
+        <td class="px-3 py-1 text-right"><%= @invoice.po_number %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<div class="text-xs mb-4">
+  <span class="font-bold">Company:</span>
+  <span class="ml-2 underline"><%= @customer&.name %></span>
+</div>
+
+<table class="w-full text-xs border-collapse border border-slate-300">
+  <thead>
+    <tr class="text-white" style="background-color: #43495f;">
+      <th class="text-left px-2 py-1.5 font-semibold">Description of Work</th>
+      <th class="text-right px-2 py-1.5 font-semibold w-20 whitespace-nowrap border-x border-slate-400">Qty / Hrs</th>
+      <th class="text-center px-2 py-1.5 font-semibold w-20 whitespace-nowrap border-r border-slate-400">Unit Price</th>
+      <th class="text-right px-2 py-1.5 font-semibold w-24 whitespace-nowrap">Sub Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="border-b border-slate-200">
+      <td class="px-2 py-1 font-medium" colspan="4">
+        <%= @invoice.period_start&.strftime("%B %-d") %> to <%= @invoice.period_end&.strftime("%B %-d, %Y") %>
+      </td>
+    </tr>
+    <% @lines.each_with_index do |line, index| %>
+      <% hours = line.task_id ? @line_hours[line.task_id].to_d : nil %>
+      <tr class="<%= index.odd? ? 'bg-slate-200' : '' %>">
+        <td class="px-2 py-1"><span class="ml-3">&#8226; <%= line.description %></span></td>
+        <td class="px-2 py-1 text-right tabular-nums border-x border-slate-300"><%= hours if hours&.positive? %></td>
+        <td class="px-2 py-1 border-r border-slate-300"></td>
+        <td class="px-2 py-1"></td>
+      </tr>
+    <% end %>
+    <% if @other_hours.positive? %>
+      <tr class="<%= @lines.size.odd? ? 'bg-slate-200' : '' %>">
+        <td class="px-2 py-1"><span class="ml-3">&#8226; Other billable work</span></td>
+        <td class="px-2 py-1 text-right tabular-nums border-x border-slate-300"><%= @other_hours %></td>
+        <td class="px-2 py-1 border-r border-slate-300"></td>
+        <td class="px-2 py-1"></td>
+      </tr>
+    <% end %>
+    <tr class="border-t border-slate-300 font-bold">
+      <td class="px-2 py-1.5 text-left">Total</td>
+      <td class="px-2 py-1.5 text-right tabular-nums border-x border-slate-300"><%= @invoice.total_hours %></td>
+      <td class="px-2 py-1.5 text-center tabular-nums border-r border-slate-300"><%= number_to_currency(@invoice.rate) %></td>
+      <td class="px-2 py-1.5 text-right tabular-nums"><%= number_to_currency(@invoice.total_amount) %></td>
+    </tr>
+    <tr class="border-t border-slate-300">
+      <td class="px-2 py-1.5 text-left font-bold" colspan="2">GST</td>
+      <td class="px-2 py-1.5 text-center font-bold border-r border-slate-300">0%</td>
+      <td class="px-2 py-1.5 text-right font-bold tabular-nums">$0</td>
+    </tr>
+    <tr class="text-white" style="background-color: #43495f;">
+      <td class="px-2 py-1.5 font-bold">Grand Total</td>
+      <td class="px-2 py-1.5" colspan="2"></td>
+      <td class="px-2 py-1.5 text-right font-bold tabular-nums whitespace-nowrap"><%= number_to_currency(@invoice.total_amount) %> <%= @customer&.currency %></td>
+    </tr>
+  </tbody>
+</table>
+
+<%# ── PAGE 2: Project Code Breakdown ── %>
+<% if @project_summary && @project_summary.rows.any? %>
+  <div class="page-break"></div>
+
+  <h2 class="text-base font-bold mb-4 mt-8 print:mt-0">Project Code Breakdown</h2>
+
+  <table class="w-full text-xs border-collapse border border-slate-300">
+    <thead>
+      <tr class="text-white" style="background-color: #43495f;">
+        <th class="text-left px-2 py-1.5 font-semibold">Project Code</th>
+        <th class="text-left px-2 py-1.5 font-semibold">Project Description</th>
+        <th class="text-right px-2 py-1.5 font-semibold w-20">Hours</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% assigned_total = @project_summary.rows.sum(&:hours) %>
+      <% @project_summary.rows.each_with_index do |row, index| %>
+        <tr class="border-b border-slate-300 <%= index.odd? ? 'bg-slate-200' : '' %>">
+          <td class="px-2 py-1.5 font-mono"><%= row.project_code.code %></td>
+          <td class="px-2 py-1.5"><%= row.project_code.description %></td>
+          <td class="px-2 py-1.5 text-right tabular-nums"><%= row.hours %></td>
+        </tr>
+      <% end %>
+      <tr class="text-white" style="background-color: #43495f;">
+        <td class="px-2 py-1.5 font-bold" colspan="2">Total</td>
+        <td class="px-2 py-1.5 text-right font-bold tabular-nums"><%= assigned_total %></td>
+      </tr>
+    </tbody>
+  </table>
+<% end %>
