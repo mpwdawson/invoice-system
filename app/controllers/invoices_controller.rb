@@ -17,9 +17,10 @@ class InvoicesController < ApplicationController
 
     @profile  = ContractorProfile.first
     @customer = @invoice.customer
-    @lines    = @invoice.invoice_lines.order(:sort_order)
-    @line_hours = TimeEntry.where(invoice_id: @invoice.id).group(:task_id).sum(:hours)
-    @named_hours = @lines.filter_map { |line| @line_hours[line.task_id] if line.task_id }.sum
+    lines = @invoice.invoice_lines.order(:sort_order)
+    @task_lines    = lines.select { |line| line.line_type == "task" }
+    @expense_lines = lines.select { |line| line.line_type == "expense" }
+    @named_hours = @task_lines.sum { |line| line.quantity || 0 }
     @other_hours = @invoice.total_hours - @named_hours
     @project_summary = Invoices::InvoiceProjectSummaryQuery.call(invoice: @invoice) if @customer&.requires_project_codes?
 

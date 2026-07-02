@@ -65,4 +65,39 @@
       </tbody>
     </table>
   <% end %>
+
+  <% period_label = @invoice.period_start&.strftime("%B %Y") %>
+  <% expense = @expense_line %>
+  <div class="mt-6 border-t dark:border-slate-700 pt-4">
+    <div class="flex items-center gap-2 mb-3">
+      <input type="checkbox" name="expense[include]" value="1"
+             <%= 'checked' if expense %>
+             class="rounded"
+             data-action="change->craft-lines#toggleExpense">
+      <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Include expense line</span>
+    </div>
+    <div data-craft-lines-target="expenseFields" class="<%= 'opacity-50' unless expense %> grid grid-cols-[1fr_5rem_6rem] gap-3 items-center">
+      <input type="text" name="expense[description]"
+             value="<%= expense&.description || "Monthly internet and cell phone charges - #{period_label}" %>"
+             class="rounded border px-2 py-1 text-sm dark:bg-slate-800 dark:border-slate-600"
+             <%= 'disabled' unless expense %>>
+      <input type="number" name="expense[quantity]" step="1" min="1"
+             value="<%= expense&.quantity || 1 %>"
+             class="rounded border px-2 py-1 text-sm text-right dark:bg-slate-800 dark:border-slate-600"
+             <%= 'disabled' unless expense %>>
+      <div class="flex items-center gap-1">
+        <span class="text-sm text-slate-500">$</span>
+        <input type="number" name="expense[unit_price]" step="0.01" min="0"
+               value="<%= expense&.unit_price || '' %>"
+               placeholder="0.00"
+               class="rounded border px-2 py-1 text-sm text-right w-full dark:bg-slate-800 dark:border-slate-600"
+               <%= 'disabled' unless expense %>>
+      </div>
+    </div>
+    <div class="grid grid-cols-[1fr_5rem_6rem] gap-3 mt-1">
+      <span class="text-xs text-slate-400">Description</span>
+      <span class="text-xs text-slate-400 text-right">Qty</span>
+      <span class="text-xs text-slate-400 text-right">Unit Price</span>
+    </div>
+  </div>
 </div>

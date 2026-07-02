@@ -107,6 +107,59 @@ describe Invoices::WizardController do
       end
     end
 
+    context 'when submitting step 3 with an expense line' do
+      subject { patch invoice_wizard_step_path(invoice, step: 4), params: params }
+
+      let(:customer) { create(:customer) }
+      let(:invoice)  { create(:invoice, customer:, wizard_current_step: 3, period_start: '2026-06-01', period_end: '2026-06-30') }
+      let(:task)     { create(:task, customer:, title: 'Design Work') }
+
+      before { create(:time_entry, task:, date: Date.new(2026, 6, 5), hours: 3.0) }
+
+      let(:params) do
+        {
+          selected_tasks: { task.id.to_s => 'Design Platform Features' },
+          expense: { include: '1', description: 'Monthly internet - June 2026', quantity: '1', unit_price: '50.00' }
+        }
+      end
+
+      it 'creates both a task line and an expense line' do
+        expect { subject }.to change(invoice.invoice_lines, :count).by(2)
+
+        task_line = invoice.invoice_lines.tasks.first
+        expense_line = invoice.invoice_lines.expenses.first
+
+        expect(task_line.description).to eq('Design Platform Features')
+        expect(expense_line.description).to eq('Monthly internet - June 2026')
+        expect(expense_line.quantity).to eq(1)
+        expect(expense_line.unit_price).to eq(50.00)
+      end
+
+      it 'updates an existing expense line on re-submission' do
+        subject
+
+        patch invoice_wizard_step_path(invoice, step: 4), params: {
+          selected_tasks: { task.id.to_s => 'Design Platform Features' },
+          expense: { include: '1', description: 'Updated expense', quantity: '1', unit_price: '75.00' }
+        }
+
+        expect(invoice.invoice_lines.expenses.count).to eq(1)
+        expect(invoice.invoice_lines.expenses.first.unit_price).to eq(75.00)
+      end
+
+      it 'removes the expense line when unchecked' do
+        subject
+        expect(invoice.invoice_lines.expenses.count).to eq(1)
+
+        patch invoice_wizard_step_path(invoice, step: 4), params: {
+          selected_tasks: { task.id.to_s => 'Design Platform Features' },
+          expense: { include: '0' }
+        }
+
+        expect(invoice.invoice_lines.expenses.count).to eq(0)
+      end
+    end
+
     context 'when submitting step 3 for a customer requiring project codes' do
       subject { patch invoice_wizard_step_path(invoice, step: 4), params: params }
 

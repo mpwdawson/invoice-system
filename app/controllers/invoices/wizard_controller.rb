@@ -78,7 +78,8 @@ module Invoices
         sort: @sort
       )
       @sort_key, @sort_dir = @sort.match(/\A(title|hours|date)_(asc|desc)\z/)&.captures || ["title", "asc"]
-      @existing_line_task_ids = @invoice.invoice_lines.where.not(task_id: nil).pluck(:task_id)
+      @existing_line_task_ids = @invoice.invoice_lines.tasks.pluck(:task_id)
+      @expense_line = @invoice.invoice_lines.expenses.first
     end
 
     def set_project_codes_data
@@ -110,7 +111,7 @@ module Invoices
       selected_task_ids = selected.keys.map(&:to_i)
 
       # Delete lines for unchecked tasks
-      @invoice.invoice_lines.where.not(task_id: selected_task_ids).where.not(task_id: nil).destroy_all
+      @invoice.invoice_lines.tasks.where.not(task_id: selected_task_ids).destroy_all
 
       # Create or update lines for checked tasks
       next_sort = (@invoice.invoice_lines.maximum(:sort_order) || -1) + 1
@@ -124,9 +125,27 @@ module Invoices
         if existing_line
           existing_line.update!(description: name)
         else
-          @invoice.invoice_lines.create!(task_id: task.id, description: name, sort_order: next_sort)
+          @invoice.invoice_lines.create!(task_id: task.id, description: name, line_type: "task", sort_order: next_sort)
           next_sort += 1
         end
+      end
+
+      sync_expense_line(next_sort)
+    end
+
+    def sync_expense_line(next_sort)
+      expense = params[:expense] || {}
+      if expense[:include] == "1" && expense[:description].present?
+        existing = @invoice.invoice_lines.expenses.first
+        attrs = { description: expense[:description], quantity: expense[:quantity].to_d,
+                  unit_price: expense[:unit_price].to_d }
+        if existing
+          existing.update!(attrs)
+        else
+          @invoice.invoice_lines.create!(attrs.merge(line_type: "expense", sort_order: next_sort))
+        end
+      else
+        @invoice.invoice_lines.expenses.destroy_all
       end
     end
 

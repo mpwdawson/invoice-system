@@ -54,7 +54,7 @@ module Invoices
     end
 
     def line_params
-      params.expect(invoice_line: [:description, :task_id, :header])
+      params.expect(invoice_line: [:description, :task_id, :header, :line_type, :quantity, :unit_price])
     end
   end
 end

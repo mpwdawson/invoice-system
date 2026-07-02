@@ -3,7 +3,7 @@
 <%# ── PAGE 1: Header + Line Items + Totals ── %>
 
 <div class="flex items-center gap-3 mb-4">
-  <%= image_tag("logo.svg", class: "w-10 h-10") %>
+  <%= image_tag("logo.svg", class: "w-15 h-15") %>
   <h1 class="text-5xl font-bold" style="color: #4A1525;"><%= @profile&.name %></h1>
 </div>
 
@@ -76,32 +76,43 @@
         <%= @invoice.period_start&.strftime("%B %-d") %> to <%= @invoice.period_end&.strftime("%B %-d, %Y") %>
       </td>
     </tr>
-    <% @lines.each_with_index do |line, index| %>
-      <% hours = line.task_id ? @line_hours[line.task_id].to_d : nil %>
-      <tr class="<%= index.odd? ? 'bg-slate-200' : '' %>">
+    <% row_index = 0 %>
+    <% @task_lines.each do |line| %>
+      <tr class="<%= row_index.odd? ? 'bg-slate-200' : '' %>">
         <td class="px-2 py-1"><span class="ml-3">&#8226; <%= line.description %></span></td>
-        <td class="px-2 py-1 text-right tabular-nums border-x border-slate-300"><%= hours if hours&.positive? %></td>
+        <td class="px-2 py-1 text-right tabular-nums border-x border-slate-300"><%= line.quantity if line.quantity&.positive? %></td>
         <td class="px-2 py-1 border-r border-slate-300"></td>
         <td class="px-2 py-1"></td>
       </tr>
+      <% row_index += 1 %>
     <% end %>
     <% if @other_hours.positive? %>
-      <tr class="<%= @lines.size.odd? ? 'bg-slate-200' : '' %>">
+      <tr class="<%= row_index.odd? ? 'bg-slate-200' : '' %>">
         <td class="px-2 py-1"><span class="ml-3">&#8226; Other billable work</span></td>
         <td class="px-2 py-1 text-right tabular-nums border-x border-slate-300"><%= @other_hours %></td>
         <td class="px-2 py-1 border-r border-slate-300"></td>
         <td class="px-2 py-1"></td>
       </tr>
+      <% row_index += 1 %>
+    <% end %>
+    <% @expense_lines.each do |line| %>
+      <tr class="<%= row_index.odd? ? 'bg-slate-200' : '' %>">
+        <td class="px-2 py-1"><span class="ml-3">&#8226; <%= line.description %></span></td>
+        <td class="px-2 py-1 text-right tabular-nums border-x border-slate-300"><%= line.quantity %></td>
+        <td class="px-2 py-1 text-right tabular-nums border-r border-slate-300"><%= number_to_currency(line.unit_price) %></td>
+        <td class="px-2 py-1 text-right tabular-nums"><%= number_to_currency(line.line_total) %></td>
+      </tr>
+      <% row_index += 1 %>
     <% end %>
     <tr class="border-t border-slate-300 font-bold">
       <td class="px-2 py-1.5 text-left">Total</td>
       <td class="px-2 py-1.5 text-right tabular-nums border-x border-slate-300"><%= @invoice.total_hours %></td>
-      <td class="px-2 py-1.5 text-center tabular-nums border-r border-slate-300"><%= number_to_currency(@invoice.rate) %></td>
-      <td class="px-2 py-1.5 text-right tabular-nums"><%= number_to_currency(@invoice.total_amount) %></td>
+      <td class="px-2 py-1.5 text-right tabular-nums border-r border-slate-300"><%= number_to_currency(@invoice.rate) %></td>
+      <td class="px-2 py-1.5 text-right tabular-nums"><%= number_to_currency(@invoice.hours_subtotal) %></td>
     </tr>
     <tr class="border-t border-slate-300">
       <td class="px-2 py-1.5 text-left font-bold" colspan="2">GST</td>
-      <td class="px-2 py-1.5 text-center font-bold border-r border-slate-300">0%</td>
+      <td class="px-2 py-1.5 text-right font-bold border-r border-slate-300">0%</td>
       <td class="px-2 py-1.5 text-right font-bold tabular-nums">$0</td>
     </tr>
     <tr class="text-white" style="background-color: #43495f;">
