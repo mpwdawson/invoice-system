@@ -33,7 +33,7 @@
 
       <div>
         <%= label_tag :ticket_ref, "Ticket #", class: "block text-xs font-medium mb-1" %>
-        <%= text_field_tag :ticket_ref, params[:ticket_ref],
+        <%= text_field_tag :ticket_ref, @ticket_ref || params[:ticket_ref],
             placeholder: "AW-1234 (optional)",
             class: "w-full border rounded px-2 py-1.5 text-sm dark:bg-slate-700 dark:border-slate-600" %>
       </div>

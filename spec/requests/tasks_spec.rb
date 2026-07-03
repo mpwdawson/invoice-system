@@ -165,6 +165,26 @@ describe TasksController do
         expect(response.body).to include("selected=\"selected\" value=\"#{customer.id}\"")
       end
     end
+
+    context 'with a ticket prefix in the title' do
+      let(:params) { { title: 'AW-6833 Add Invoice Line Feature' } }
+
+      it 'splits the ticket ref from the title' do
+        subject
+        expect(response.body).to include('value="Add Invoice Line Feature"')
+        expect(response.body).to include('value="AW-6833"')
+      end
+    end
+
+    context 'with no ticket prefix in the title' do
+      let(:params) { { title: 'Plain task name' } }
+
+      it 'leaves the title intact and ticket ref empty' do
+        subject
+        expect(response.body).to include('value="Plain task name"')
+        expect(response.body).not_to include('value="AW-')
+      end
+    end
   end
 
   describe 'POST #inline_create' do

@@ -57,7 +57,9 @@ class TasksController < ApplicationController
 
   # GET /tasks/inline_new — compact create form inside the Log Time search dropdown
   def inline_new
-    @task = Task.new(title: params[:title], customer_id: params[:customer_id])
+    extracted = Tasks::ExtractTicketFromTitle.call(title: params[:title])
+    @task = Task.new(title: extracted.title, customer_id: params[:customer_id])
+    @ticket_ref = extracted.ticket_ref
     load_form_data
   end
 
