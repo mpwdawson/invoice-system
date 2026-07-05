@@ -189,6 +189,20 @@ describe Tasks::SearchQuery do
     end
   end
 
+  context 'with a ticket prefix and title combined in query' do
+    let(:query) { 'aw-6770 Alpha task' }
+
+    before { create(:ticket_reference, task: task_alpha, prefix: 'AW', number: 6770) }
+
+    it 'finds the task by matching ticket ref and title separately' do
+      expect(subject).to include(task_alpha)
+    end
+
+    it 'excludes tasks that match neither' do
+      expect(subject).not_to include(task_beta)
+    end
+  end
+
   context 'with a task that has multiple matching ticket refs' do
     let(:query) { 'AW' }
 

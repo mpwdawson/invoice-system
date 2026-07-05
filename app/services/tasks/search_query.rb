@@ -51,13 +51,26 @@ module Tasks
                 :status, :billable, :sort, :direction
 
     def apply_search(scope)
-      term = "%#{query}%"
-      scope.left_joins(:ticket_references)
-        .where(
-          "tasks.title LIKE :term OR UPPER(ticket_references.prefix || '-' || ticket_references.number) LIKE UPPER(:term)",
-          term:
-        )
-        .distinct
+      extraction = ExtractTicketFromTitle.call(title: query)
+
+      if extraction.ticket_ref && extraction.title.present?
+        ticket_term = "%#{extraction.ticket_ref}%"
+        title_term = "%#{extraction.title}%"
+        scope.left_joins(:ticket_references)
+          .where(
+            "UPPER(ticket_references.prefix || '-' || ticket_references.number) LIKE UPPER(:ticket_term) AND tasks.title LIKE :title_term",
+            ticket_term:, title_term:
+          )
+          .distinct
+      else
+        term = "%#{query}%"
+        scope.left_joins(:ticket_references)
+          .where(
+            "tasks.title LIKE :term OR UPPER(ticket_references.prefix || '-' || ticket_references.number) LIKE UPPER(:term)",
+            term:
+          )
+          .distinct
+      end
     end
 
     def apply_sort(scope)
