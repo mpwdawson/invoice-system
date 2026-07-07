@@ -53,6 +53,8 @@ class TasksController < ApplicationController
     @query       = params[:query]
     @customer_id = params[:customer_id].presence
     @tasks = Tasks::SearchQuery.call(query: @query, status: 'active', customer_id: @customer_id).limit(15)
+    exact_match = @tasks.any? { |task| task.title.casecmp?(@query.to_s.strip) }
+    @show_create_option = @query.present? && !exact_match
   end
 
   # GET /tasks/inline_new — compact create form inside the Log Time search dropdown

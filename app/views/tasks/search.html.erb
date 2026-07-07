@@ -1,17 +1,15 @@
 <%= turbo_frame_tag "task-search-results" do %>
-  <% if @tasks.any? %>
+  <% if @tasks.any? || @query.present? %>
     <ul class="border rounded shadow-lg bg-white dark:bg-slate-800 dark:border-slate-600 divide-y dark:divide-slate-700 max-h-60 overflow-y-auto">
       <%= render partial: 'search_result', collection: @tasks, as: :task %>
-    </ul>
-  <% elsif @query.present? %>
-    <ul class="border rounded shadow-lg bg-white dark:bg-slate-800 dark:border-slate-600">
-      <li>
-        <%= link_to inline_new_tasks_path(title: @query, customer_id: @customer_id),
-            class: "block px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer" do %>
-          <span class="text-slate-400 text-xs">No tasks found.</span>
-          <span class="font-medium ml-2">Create "<%= @query %>"</span>
-        <% end %>
-      </li>
+      <% if @show_create_option %>
+        <li>
+          <%= link_to inline_new_tasks_path(title: @query, customer_id: @customer_id),
+              class: "block px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer" do %>
+            <span class="font-medium">Create "<%= @query %>"</span>
+          <% end %>
+        </li>
+      <% end %>
     </ul>
   <% end %>
 <% end %>

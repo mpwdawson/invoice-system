@@ -138,6 +138,42 @@ describe TasksController do
         expect(response.body).not_to include('Beta Work Item')
       end
     end
+
+    context 'with a query that partially matches' do
+      let(:params) { { query: 'Alpha' } }
+
+      it 'shows the Create option' do
+        subject
+        expect(response.body).to include('Create "Alpha"')
+      end
+    end
+
+    context 'with a query that exactly matches an existing title' do
+      let(:params) { { query: 'Alpha Work Item' } }
+
+      it 'hides the Create option' do
+        subject
+        expect(response.body).not_to include('Create "Alpha Work Item"')
+      end
+    end
+
+    context 'with a query that exactly matches case-insensitively' do
+      let(:params) { { query: 'alpha work item' } }
+
+      it 'hides the Create option' do
+        subject
+        expect(response.body).not_to include('Create "alpha work item"')
+      end
+    end
+
+    context 'with a query that exactly matches but has surrounding whitespace' do
+      let(:params) { { query: '  Alpha Work Item  ' } }
+
+      it 'hides the Create option' do
+        subject
+        expect(response.body).not_to include('Create "')
+      end
+    end
   end
 
   describe 'GET #inline_new' do
