@@ -20,6 +20,10 @@ export default class extends Controller {
 
   reset(event) {
     if (!event.detail.success) return
+    this.clear()
+  }
+
+  clear() {
     this.taskInputTarget.value    = ""
     this.taskIdInputTarget.value  = ""
     this.hoursInputTarget.value   = ""
@@ -69,7 +73,7 @@ export default class extends Controller {
     const taskId = this.taskIdInputTarget.value
     const date   = this.dateInputTarget.value
     const hours  = this.hoursInputTarget.value
-    if (!taskId || !date || !hours) return
+    if (!taskId || !date) return
     const params = new URLSearchParams({ task_id: taskId, date, hours })
     this.previewFrameTarget.src = `/time_entries/preview?${params}`
   }

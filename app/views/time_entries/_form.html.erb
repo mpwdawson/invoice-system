@@ -44,10 +44,15 @@
                  data-time-entry-form-target="previewFrame">
     </turbo-frame>
 
-    <div>
+    <div class="flex items-center gap-3 pt-2">
       <button type="submit"
               class="px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500">
         Log Hours
+      </button>
+      <button type="button"
+              data-action="click->time-entry-form#clear"
+              class="px-4 py-2 border text-sm rounded hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-800">
+        Reset
       </button>
     </div>
 

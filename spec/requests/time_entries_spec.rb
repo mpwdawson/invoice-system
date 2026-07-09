@@ -96,6 +96,27 @@ describe TimeEntriesController do
         expect(response.body).to include('Already')
       end
     end
+
+    context 'when hours is blank and no entry exists for the task and date' do
+      let(:params) { { task_id: task.id, date: Date.current.to_s, hours: '' } }
+
+      it 'prompts for hours instead of showing a zero total' do
+        subject
+        expect(response.body).to include('Enter hours to log this entry')
+      end
+    end
+
+    context 'when hours is blank and an entry already exists for the task and date' do
+      before { create(:time_entry, task: task, date: Date.current, hours: 3.0) }
+
+      let(:params) { { task_id: task.id, date: Date.current.to_s, hours: '' } }
+
+      it 'shows the existing total without an "adding" clause' do
+        subject
+        expect(response.body).to include('Already <strong>3.0h</strong> logged today')
+        expect(response.body).not_to include('adding')
+      end
+    end
   end
 
   describe 'POST #create' do

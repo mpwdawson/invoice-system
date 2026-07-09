@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "time-entry-preview" do %>
   <% if @task %>
-    <div class="border rounded p-3 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 space-y-1">
+    <div class="border rounded p-3 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 space-y-1 mb-2">
       <p class="font-medium"><%= @task.title %></p>
       <p class="text-slate-500 text-xs">
         <%= @task.customer.name %>
@@ -9,10 +9,14 @@
         <% end %>
       </p>
       <p class="text-slate-700 dark:text-slate-300">
-        <% if @existing_hours > 0 %>
+        <% if @existing_hours > 0 && @hours > 0 %>
           Already <%= @existing_hours %>h today &rarr; adding <%= @hours %>h &rarr; total: <strong><%= @total %>h</strong>
-        <% else %>
+        <% elsif @existing_hours > 0 %>
+          Already <strong><%= @existing_hours %>h</strong> logged today
+        <% elsif @hours > 0 %>
           Adding <%= @hours %>h &rarr; total: <strong><%= @total %>h</strong>
+        <% else %>
+          Enter hours to log this entry
         <% end %>
       </p>
     </div>
