@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Copies the local SQLite development database (real invoice/task data) to a
+# timestamped backup file, for seeding a new environment (e.g. production).
+# Usage: bin/db-export [outfile]
+
+SRC="storage/development.sqlite3"
+OUTFILE="${1:-invoice_dev_$(date +%Y%m%d_%H%M%S).sqlite3}"
+
+if [ ! -f "$SRC" ]; then
+  echo "Error: ${SRC} not found — run from the app root." >&2
+  exit 1
+fi
+
+cp "$SRC" "$OUTFILE"
+
+SIZE=$(du -h "$OUTFILE" | cut -f1)
+echo "Done: ${OUTFILE} (${SIZE})"

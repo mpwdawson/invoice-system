@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Writes a SQLite database file into the invoice_system_storage Docker volume
+# as production.sqlite3. Run this ON THE TARGET HOST (where Kamal deploys),
+# before or after the app's first boot — docker-entrypoint's `db:prepare` runs
+# any pending migrations against the seeded data on next boot.
+# Usage: bin/db-import <dumpfile>
+
+VOLUME="${DB_VOLUME:-invoice_system_storage}"
+DUMPFILE="${1:?Usage: bin/db-import <dumpfile>}"
+
+if [ ! -f "$DUMPFILE" ]; then
+  echo "Error: file not found: ${DUMPFILE}" >&2
+  exit 1
+fi
+
+echo "Writing ${DUMPFILE} into volume ${VOLUME} as production.sqlite3..."
+
+docker run --rm \
+  -v "${VOLUME}:/target" \
+  -v "$(cd "$(dirname "$DUMPFILE")" && pwd):/src" \
+  alpine cp "/src/$(basename "$DUMPFILE")" /target/production.sqlite3
+
+echo "Done. Boot/restart the app — db:prepare will run any pending migrations."

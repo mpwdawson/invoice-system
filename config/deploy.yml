@@ -4,42 +4,35 @@ service: invoice_system
 # Name of the container image (use your-user/app-name on external registries).
 image: invoice_system
 
-# Deploy to these servers.
+# proxy: false + a direct port publish, rather than routing through the
+# shared kamal-proxy container other apps on this host use — this app gets
+# its own dedicated port instead of a hostname sharing someone else's port.
 servers:
   web:
-    - 192.168.0.1
+    hosts:
+      - <%= ENV["DEPLOY_HOST_IP"] %>
+    proxy: false
+    options:
+      publish: "<%= ENV["DEPLOY_PORT"] %>:80"
   # job:
   #   hosts:
   #     - 192.168.0.1
   #   cmd: bin/jobs
 
-# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
-# If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
-#
-# Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
-#
-# Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
-#
-# proxy:
-#   ssl: true
-#   host: app.example.com
-
-# Where you keep your container images.
+# Local Kamal-managed registry on this host. 127.0.0.1 (not "localhost")
+# skips Kamal's local-registry auto-tunnel, which doesn't apply here since
+# builder and server are the same machine (self-deploy).
 registry:
-  # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: localhost:5555
-
-  # Needed for authenticated registries.
-  # username: your-user
-
-  # Always use an access token rather than real password when possible.
-  # password:
-  #   - KAMAL_REGISTRY_PASSWORD
+  server: 127.0.0.1:5555
+  username: local
+  password:
+    - KAMAL_REGISTRY_PASSWORD
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
   secret:
     - RAILS_MASTER_KEY
+    - APP_PASSWORD_DIGEST
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
@@ -50,10 +43,6 @@ env:
 
     # Set number of cores available to the application on each server (default: 1).
     # WEB_CONCURRENCY: 2
-
-    # Match this to any external database server to configure Active Record correctly
-    # Use invoice_system-db for a db accessory server on same machine via local kamal docker network.
-    # DB_HOST: 192.168.0.2
 
     # Log everything from Rails
     # RAILS_LOG_LEVEL: debug
@@ -80,9 +69,10 @@ asset_path: /rails/public/assets
 builder:
   arch: amd64
 
-  # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
-  # remote: ssh://docker@docker-builder-server
-  #
+  # docker-container driver can't reach a loopback-bound registry from its
+  # isolated network namespace; plain docker driver builds on the host directly.
+  driver: docker
+
   # # Pass arguments and secrets to the Docker build process
   # args:
   #   RUBY_VERSION: ruby-4.0.5
@@ -90,30 +80,5 @@ builder:
   #   - GITHUB_TOKEN
   #   - RAILS_MASTER_KEY
 
-# Use a different ssh user than root
-# ssh:
-#   user: app
-
-# Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: valkey/valkey:8
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
+ssh:
+  user: <%= ENV["DEPLOY_SSH_USER"] %>
