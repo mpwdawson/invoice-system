@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-2">
       <div class="flex items-center gap-3">
         <span class="text-sm font-semibold">
-          <%= group.date == user_date ? 'Today' : group.date.strftime("%-d %b") %>
+          <%= group.date == user_date ? 'Today' : group.date.strftime("%a %-d %b") %>
         </span>
         <% if group.total_hours > 0 %>
           <span class="text-xs text-slate-400"><%= group.total_hours %>h</span>
